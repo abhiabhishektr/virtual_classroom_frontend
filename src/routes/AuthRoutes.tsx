@@ -5,6 +5,7 @@ import Login from '../components/Auth/Login';
 import Signup from '../components/Auth/Signup';
 import ForgotPassword from '../components/Auth/ForgotPassword';
 import OTPVerification from '../components/Auth/OTPVerification';
+import AdminLogin from '../components/Auth/AdminLogin';
 import Test from '../components/Shared/Navbar';
 
 const AuthRoutes: React.FC = () => {
@@ -14,6 +15,7 @@ const AuthRoutes: React.FC = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/otp-verification" element={<OTPVerification />} />
+      <Route path="/adminLogin" element={<AdminLogin/>} />
       <Route path="*" element={<Navigate to="/auth/login" replace />} />
 
       {/* ------------ For testing -------- */}

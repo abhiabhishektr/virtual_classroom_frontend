@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 file.md
-TTTTTTT.tsx
+src/Testing
+
 
 # rm -f .git/index.lock

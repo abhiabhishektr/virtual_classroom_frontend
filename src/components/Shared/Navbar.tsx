@@ -1,58 +1,71 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FiGrid, FiBook, FiClipboard, FiBell, FiUser } from 'react-icons/fi';
 
 const Navbar: React.FC = () => {
-  const [selectedButton, setSelectedButton] = useState<string | null>(null);
+  const [selectedButton, setSelectedButton] = useState<string | null>('Dashboard');
 
   const handleButtonClick = (buttonName: string) => {
     setSelectedButton(buttonName);
   };
 
   return (
-    <nav className="bg-gray-800 p-4">
+    <nav className="bg-white p-4 shadow-md">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Left section with logo */}
         <div className="flex items-center">
-          <span className="text-white text-lg font-semibold">Your Logo</span>
+          <span className="text-xl font-bold text-gray-800">Logo</span>
         </div>
 
         {/* Middle section with clickable buttons */}
-        <div className="flex bg-gray-700 rounded-full p-2">
+        <div className="flex bg-gray-100 rounded-full px-8 py-3 shadow-inner">
           <Link
-            to="/dashboard"
+            to="/"
             onClick={() => handleButtonClick('Dashboard')}
             className={`${
-              selectedButton === 'Dashboard' ? 'bg-gray-800 text-white' : 'text-gray-300'
-            } hover:bg-gray-800 hover:text-white px-5 py-2 rounded-full`}
+              selectedButton === 'Dashboard'
+                ? 'bg-gradient-to-r  from-blue-400 to-blue-600 text-white'
+                : 'text-gray-500'
+            } hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-400 hover:text-white px-4 py-2 rounded-full flex items-center transition-colors`}
           >
+            <FiGrid className="mr-2" />
             Dashboard
           </Link>
           <Link
-            to="/button2"
-            onClick={() => handleButtonClick('Button 2')}
+            to="/courses"
+            onClick={() => handleButtonClick('Courses')}
             className={`${
-              selectedButton === 'Button 2' ? 'bg-gray-800 text-white' : 'text-gray-300'
-            } hover:bg-gray-800 hover:text-white px-5 py-2 rounded-full`}
+              selectedButton === 'Courses'
+                ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
+                : 'text-gray-500'
+            } hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-400 hover:text-white px-4 py-2 rounded-full flex items-center transition-colors`}
           >
-            Button 2
+            <FiBook className="mr-2" />
+            Courses
           </Link>
           <Link
-            to="/button3"
-            onClick={() => handleButtonClick('Button 3')}
+            to="/assignments"
+            onClick={() => handleButtonClick('Assignments')}
             className={`${
-              selectedButton === 'Button 3' ? 'bg-gray-800 text-white' : 'text-gray-300'
-            } hover:bg-gray-800 hover:text-white px-5 py-2 rounded-full`}
+              selectedButton === 'Assignments'
+                ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
+                : 'text-gray-500'
+            } hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-400 hover:text-white px-4 py-2 rounded-full flex items-center transition-colors`}
           >
-            Button 3
+            <FiClipboard className="mr-2" />
+            Assignments
           </Link>
           <Link
-            to="/button4"
-            onClick={() => handleButtonClick('Button 4')}
+            to="/notifications"
+            onClick={() => handleButtonClick('Notifications')}
             className={`${
-              selectedButton === 'Button 4' ? 'bg-gray-800 text-white' : 'text-gray-300'
-            } hover:bg-gray-800 hover:text-white px-5 py-2 rounded-full`}
+              selectedButton === 'Notifications'
+                ? 'bg-gradient-to-r  from-blue-400 to-blue-600 text-white'
+                : 'text-gray-500'
+            } hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-400 hover:text-white px-4 py-2 rounded-full flex items-center transition-colors`}
           >
-            Button 4
+            <FiBell className="mr-2" />
+            Notifications
           </Link>
         </div>
 
@@ -60,8 +73,9 @@ const Navbar: React.FC = () => {
         <div className="flex items-center">
           <Link
             to="/profile"
-            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+            className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md flex items-center transition-colors"
           >
+            <FiUser className="mr-2" />
             Profile
           </Link>
         </div>

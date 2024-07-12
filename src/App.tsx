@@ -15,7 +15,7 @@ const AppContent: React.FC = () => {
   return (
     <div className="App">
       {!isAuthRoute && <Navbar />}
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto ">
         <Routes>
           <Route path="/auth/*" element={<AuthRoutes />} />
           <Route

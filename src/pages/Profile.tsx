@@ -1,4 +1,3 @@
-// Profile.tsx
 import React, { useState } from "react";
 
 const ProfilePage: React.FC = () => {
@@ -20,8 +19,8 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-6 flex justify-center items-center">
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md rounded-xl bg-white shadow-md p-8">
         <div className="flex justify-center mb-6">
           <div className="relative">
             <img
@@ -46,8 +45,7 @@ const ProfilePage: React.FC = () => {
             value={profileData.username}
             onChange={handleInputChange}
             disabled={!isEditing}
-            className={`shadow appearance-none border rounded w-full
-                 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
               isEditing ? "bg-white" : "bg-gray-200"
             }`}
           />
@@ -107,7 +105,7 @@ const ProfilePage: React.FC = () => {
         <div className="flex items-center justify-between">
           <button
             onClick={toggleEdit}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="w-full bg-gradient-to-r from-blue-400 to-blue-600 py-3 mt-6 text-center text-white rounded-md font-semibold"
           >
             {isEditing ? "Save" : "Edit"}
           </button>
