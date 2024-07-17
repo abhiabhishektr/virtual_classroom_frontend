@@ -4,9 +4,17 @@ import App from './App.tsx'
 // import AppTesting from './Testing/AppTesting.tsx'// for testing only 
 import './main.css'
 
+
+import  {store} from './redux/store';
+import { Provider } from 'react-redux';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-    {/* <AppTesting /> */}
-  </React.StrictMode>,
+  <Provider store={store}>
+  <App />
+  </Provider> 
 )
+// // <React.StrictMode>
+// /* </React.StrictMode>, */
+// /* <AppTesting /> */
+
+

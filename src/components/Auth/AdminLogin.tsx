@@ -1,9 +1,15 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { adminLogin } from '../../api/admin/adminAuthApi';
+import { useAuth } from '../../hooks/useAuth';
 
 const AdminLogin: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate();
+  const { setadminLogin } = useAuth(); // Assuming you have a method to set auth tokens
 
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -13,10 +19,21 @@ const AdminLogin: React.FC = () => {
     setPassword(e.target.value);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log("Username:", username);
-    console.log("Password:", password);
+    setError(null);
+
+    try {
+      const response = await adminLogin(username, password);
+      if (response) {
+        console.log('Login successful:', response);
+        setadminLogin(response.tokens.accessToken, response.tokens.refreshToken);
+        navigate('/admin/');
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      setError('Invalid username or password');
+    }
   };
 
   return (
@@ -49,6 +66,7 @@ const AdminLogin: React.FC = () => {
             />
           </div>
           <button type="submit" className="w-full bg-purple-400 py-3 text-center text-gray-900 rounded-md font-semibold mt-6">Sign in</button>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
         </form>
         <div className="flex items-center pt-4 mt-4">
           <div className="flex-grow h-px bg-gray-700"></div>
@@ -63,8 +81,12 @@ const AdminLogin: React.FC = () => {
           </button>
         </div>
         <p className="text-center text-xs text-gray-400 mt-4">
-          Don't have an account? 
+          Don't have an account?
           <Link to="/auth/signup" className="text-gray-100 hover:underline hover:text-purple-400"> Sign up</Link>
+        </p>
+        <p className="text-center text-xs text-gray-400 mt-4">
+          User Login?
+          <Link to="/auth/login" className="text-gray-100 hover:underline hover:text-purple-400"> Login in</Link>
         </p>
       </div>
     </div>

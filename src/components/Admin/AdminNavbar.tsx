@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiGrid, FiBook, FiClipboard, FiBell, FiUser, FiLogIn } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiBookOpen, FiBell } from 'react-icons/fi';
+import { FiUser,FiLogIn, FiLogOut } from 'react-icons/fi';
 
-const Navbar: React.FC = () => {
+import { useAuth} from '../../hooks/useAuth';
+
+const AdminNavbar: React.FC = () => {
   const [selectedButton, setSelectedButton] = useState<string | null>('Dashboard');
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const navigate = useNavigate();
-
+  
+  const { isAdminAuthenticated} = useAuth();
   useEffect(() => {
-    const authToken = localStorage.getItem('authToken'); // Replace with your authToken retrieval logic
-    setIsLoggedIn(!!authToken); // using truthy falsy logic
+    // Check if admin token exists in localStorage
+    // setIsLoggedIn(!!isAdminAuthenticated)
+    const admintoken = localStorage.getItem('adminToken'); // Replace with your admintoken retrieval logic
+    setIsLoggedIn(!!admintoken); // using truthy falsy logic
   }, []);
 
   const handleButtonClick = (buttonName: string) => {
@@ -20,8 +26,10 @@ const Navbar: React.FC = () => {
     navigate('/profile');
   };
 
-  const handleLoginClick = () => {
-    navigate(`/auth/login`);
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken'); // Clear auth token on logout
+    setIsLoggedIn(false);
+    navigate('/admin/adminlogin');
   };
 
   return (
@@ -29,13 +37,13 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Left section with logo */}
         <div className="flex items-center">
-          <span className="text-xl font-bold text-gray-800">Logo</span>
+          <span className="text-xl font-bold text-gray-800">Admin Panel</span>
         </div>
 
         {/* Middle section with clickable buttons */}
         <div className="flex bg-gray-100 rounded-full px-8 py-3 shadow-inner">
           <Link
-            to="/"
+            to="/admin/"
             onClick={() => handleButtonClick('Dashboard')}
             className={`${
               selectedButton === 'Dashboard'
@@ -47,56 +55,65 @@ const Navbar: React.FC = () => {
             Dashboard
           </Link>
           <Link
-            to="/courses"
-            onClick={() => handleButtonClick('Courses')}
+            to="/admin/users"
+            onClick={() => handleButtonClick('Users')}
             className={`${
-              selectedButton === 'Courses'
+              selectedButton === 'Users'
                 ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
                 : 'text-gray-500'
             } hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-400 hover:text-white px-4 py-2 rounded-full flex items-center transition-colors`}
           >
-            <FiBook className="mr-2" />
-            Courses
+            <FiUsers className="mr-2" />
+            Users
           </Link>
           <Link
-            to="/assignments"
-            onClick={() => handleButtonClick('Assignments')}
+            to="/admin/course-oversight"
+            onClick={() => handleButtonClick('Course Oversight')}
             className={`${
-              selectedButton === 'Assignments'
+              selectedButton === 'Course Oversight'
                 ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
                 : 'text-gray-500'
             } hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-400 hover:text-white px-4 py-2 rounded-full flex items-center transition-colors`}
           >
-            <FiClipboard className="mr-2" />
-            Assignments
+            <FiBookOpen className="mr-2" />
+            Course Oversight
           </Link>
           <Link
-            to="/notifications"
-            onClick={() => handleButtonClick('Notifications')}
+            to="/admin/push-notifications"
+            onClick={() => handleButtonClick('Push Notifications')}
             className={`${
-              selectedButton === 'Notifications'
-                ? 'bg-gradient-to-r  from-blue-400 to-blue-600 text-white'
+              selectedButton === 'Push Notifications'
+                ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
                 : 'text-gray-500'
             } hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-400 hover:text-white px-4 py-2 rounded-full flex items-center transition-colors`}
           >
             <FiBell className="mr-2" />
-            Notifications
+            Push Notifications
           </Link>
         </div>
 
         {/* Right section with profile button */}
         <div className="flex items-center">
           {isLoggedIn ? (
-            <button
-              onClick={handleProfileClick}
-              className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md flex items-center transition-colors"
-            >
-              <FiUser className="mr-2" />
-              Profile
-            </button>
+            <>
+              <button
+                onClick={handleProfileClick}
+                className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md flex items-center transition-colors"
+              >
+                <FiUser className="mr-2" />
+                Profile
+              </button>
+              <button
+                onClick={handleLogout}
+                className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md flex items-center transition-colors ml-4"
+              >
+                <FiLogOut className="mr-2" />
+                Logout
+              </button>
+            </>
           ) : (
             <button
-              onClick={handleLoginClick}
+              onClick={() => navigate(`/auth/adminlogin`)}
               className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md flex items-center transition-colors"
             >
               <FiLogIn className="mr-2" />
@@ -109,4 +126,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default Navbar;
+export default AdminNavbar;

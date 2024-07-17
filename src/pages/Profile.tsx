@@ -1,23 +1,100 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import { getProfile, updateProfile } from "../api/profileApi";
+import { useNavigate } from "react-router-dom";
+
+import {
+  setProfileData,
+  setLoading,
+  setError,
+  setIsEditing,
+  ProfileState
+} from '../redux/slices/user/profileSlice';
+import { RootState } from '../redux/store'; // Adjust the import path as needed
+import Loader from "../components/Shared/Loader";
+import { useAuth } from "../hooks/useAuth";
 
 const ProfilePage: React.FC = () => {
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [profileData, setProfileData] = useState({
-    username: "JohnDoe",
-    email: "johndoe@example.com",
-    phone: "123-456-7890",
-    password: "password123",
-  });
+  const { logout } = useAuth();
+
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const {
+    name,
+    // username,
+    email,
+    phone,
+    password,
+    loading,
+    error,
+    isEditing
+  } = useSelector((state: RootState) => state.profile);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      // if (!name && !username && !email && !phone && !password) { // Check if profile data is already available
+      if (!name &&  !email ) { // Check if profile data is already available
+        dispatch(setLoading(true));
+        dispatch(setError(null));
+        console.log("Fetching profile data...");
+        
+        try {
+          const data = await getProfile();
+          console.log("Profile data:", data);
+          dispatch(setProfileData(data));
+        } catch (error) {
+          dispatch(setError("Failed to fetch profile data"));
+        } finally {
+          dispatch(setLoading(false));
+        }
+      }
+    };
+  
+    fetchProfileData();
+  }, [dispatch, name,email]);
+  // }, [dispatch, name, username, email, phone, password]);
+  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfileData({ ...profileData, [name]: value });
+    dispatch(setProfileData({ [name]: value } as Partial<ProfileState>));
+  };
+
+  const handleSave = async () => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
+    try {
+      const updatedProfile = await updateProfile({ name});//username
+      dispatch(setProfileData(updatedProfile));
+      dispatch(setIsEditing(false));
+    } catch (error) {
+      dispatch(setError("Failed to update profile"));
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
   const toggleEdit = () => {
-    setIsEditing(!isEditing);
+    if (isEditing) {
+      handleSave();
+    } else {
+      dispatch(setIsEditing(true));
+    }
   };
 
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen bg-gray-200"><Loader /></div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center min-h-screen bg-gray-200">{error}</div>;
+  }
+  const handleLogout = () => {
+    logout() // Dispatch your logout action here
+    navigate('/auth/login');
+    // Optionally, you can redirect or perform any cleanup after logout
+  };
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md rounded-xl bg-white shadow-md p-8">
@@ -34,73 +111,23 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-            Username
-          </label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            value={profileData.username}
-            onChange={handleInputChange}
-            disabled={!isEditing}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              isEditing ? "bg-white" : "bg-gray-200"
-            }`}
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={profileData.email}
-            onChange={handleInputChange}
-            disabled={!isEditing}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              isEditing ? "bg-white" : "bg-gray-200"
-            }`}
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="phone">
-            Phone Number
-          </label>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            value={profileData.phone}
-            onChange={handleInputChange}
-            disabled={!isEditing}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              isEditing ? "bg-white" : "bg-gray-200"
-            }`}
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            value={profileData.password}
-            onChange={handleInputChange}
-            disabled={!isEditing}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              isEditing ? "bg-white" : "bg-gray-200"
-            }`}
-          />
-        </div>
+        {['name', 'email', 'phone', 'password'].map((field) => (// Add 'username',
+          <div key={field} className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={field}>
+              {field.charAt(0).toUpperCase() + field.slice(1)}
+            </label>
+            <input
+              id={field}
+              name={field}
+              type={field === 'password' ? 'password' : 'text'}
+              value={eval(field)}
+              onChange={handleInputChange}
+              disabled={!isEditing}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${isEditing ? "bg-white" : "bg-gray-200"
+                }`}
+            />
+          </div>
+        ))}
 
         <div className="flex items-center justify-between">
           <button
@@ -108,6 +135,12 @@ const ProfilePage: React.FC = () => {
             className="w-full bg-gradient-to-r from-blue-400 to-blue-600 py-3 mt-6 text-center text-white rounded-md font-semibold"
           >
             {isEditing ? "Save" : "Edit"}
+          </button>
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-500 hover:bg-red-600 py-3 mt-6 ml-2 text-center text-white rounded-md font-semibold"
+          >
+            Logout
           </button>
         </div>
       </div>

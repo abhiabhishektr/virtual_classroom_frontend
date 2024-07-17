@@ -1,10 +1,24 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import img from '../../assets/images/img';
-import { registerUser } from '../../api/authApi'
+import { registerUser } from '../../api/authApi';
+import { verifyOTP } from '../../api/authApi';
+import { useNavigate } from 'react-router-dom';
+
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Loader from "../Shared/Loader";
+
+
+
+// import { useDispatch, useSelector } from 'react-redux';
+// import { setLoading } from '../redux/slices/loadingSlice'; // Adjust path as per your project structure
+
+
 
 const Signup: React.FC = () => {
+
+  const [lod, setLod] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -14,33 +28,87 @@ const Signup: React.FC = () => {
   const [timer, setTimer] = useState<number>(120);
   const [verificationError, setVerificationError] = useState<string>("");
 
+  const [nameError, setNameError] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
+
+  const navigate = useNavigate();
+
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
+    const value = e.target.value;
+    setName(value);
+    if (value.length < 3) {
+      setNameError("Name must be at least 3 characters long");
+    } else {
+      setNameError("");
+    }
   };
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
+    const value = e.target.value;
+    setEmail(value);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      setEmailError("Please enter a valid email address");
+    } else {
+      setEmailError("");
+    }
   };
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
+    const value = e.target.value;
+    setPassword(value);
+    if (value.length < 6) {
+      setPasswordError("Password must be at least 6 characters long");
+    } else {
+      setPasswordError("");
+    }
   };
 
   const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setConfirmPassword(e.target.value);
+    const value = e.target.value;
+    setConfirmPassword(value);
+    if (value !== password) {
+      setConfirmPasswordError("Passwords do not match");
+    } else {
+      setConfirmPasswordError("");
+    }
   };
 
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
 
-    try {
-      await registerUser({ email, password, name });
 
-      // Switch to OTP verification form
+    if (nameError || emailError || passwordError || confirmPasswordError) {
+      console.error('Please fix the errors before submitting');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match");
+      return;
+    }
+
+    try {
+
+      setLod(true);
+      const res = await registerUser({ email, password, name });
+      console.log('Response:', res);
+      
+      setLod(false);
+
+      if (res && res.message === 'User already exists') {
+        setEmailError("User already exists");
+        return;
+      }
+      console.log('User registered successfully');
       setShowSignupForm(false);
-      setTimer(120); // Reset timer for OTP resend
-    } catch (error : any) {
+      setTimer(120);
+    } catch (error: any) {
       console.error('Error signing up:', error.message);
+      setLod(false);
+
     }
   };
 
@@ -50,27 +118,51 @@ const Signup: React.FC = () => {
 
   const handleSubmitOTP = async (e: FormEvent) => {
     e.preventDefault();
-
+    // ===
+    if (!otp) {
+      toast.error('Please enter the OTP');
+      return;
+    }
     try {
-      const response = await axios.post('/api/verify-otp', {
-        email,
-        otp,
-      });
-
-      console.log('OTP verification successful:', response.data); // Handle success response
-
-      // Optionally, redirect to dashboard or another page upon successful verification
-    } catch (error ) {
-      console.error('Error verifying OTP:', error.message);
-      setVerificationError('Invalid OTP. Please try again.'); // Set error message for display
+      const response = await verifyOTP(email, otp);
+      if (response.message === 'Invalid OTP') {
+        toast.error('Invalid OTP. Please try again.');
+        setVerificationError('Invalid OTP. Please try again.');
+      } else {
+        toast.success('OTP verified successfully!');
+        setTimeout(() => {
+          navigate('/auth/login');
+        }, 1000); // Adjust the delay as needed
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', (error as Error).message);
+      toast.error('Error verifying OTP. Please try again.');
+      setVerificationError('Error verifying OTP. Please try again.');
     }
   };
 
   const handleResendOTP = () => {
     setTimer(120);
     // Resend OTP logic here
-    // This is where you would resend the OTP to the user's email or phone number
   };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
+
+if (lod) {
+  return (
+  <div className="flex justify-center items-center min-h-screen">
+    <Loader/>
+  </div>
+  )
+}
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -94,6 +186,7 @@ const Signup: React.FC = () => {
                   required
                   className="w-full rounded-md border border-gray-300 bg-white py-3 px-4 text-gray-900 outline-none focus:border-blue-500"
                 />
+                {nameError && <p className="text-red-500 text-xs mt-1">{nameError}</p>}
               </div>
               <div className="mt-1 text-sm">
                 <label htmlFor="email" className="block text-gray-400 mb-1">Email</label>
@@ -106,6 +199,7 @@ const Signup: React.FC = () => {
                   required
                   className="w-full rounded-md border border-gray-300 bg-white py-3 px-4 text-gray-900 outline-none focus:border-blue-500"
                 />
+                {emailError && <p className="text-red-500 text-xs mt-1">{emailError}</p>}
               </div>
               <div className="mt-1 text-sm">
                 <label htmlFor="password" className="block text-gray-400 mb-1">Password</label>
@@ -118,6 +212,7 @@ const Signup: React.FC = () => {
                   required
                   className="w-full rounded-md border border-gray-300 bg-white py-3 px-4 text-gray-900 outline-none focus:border-blue-500"
                 />
+                {passwordError && <p className="text-red-500 text-xs mt-1">{passwordError}</p>}
               </div>
               <div className="mt-1 text-sm">
                 <label htmlFor="confirm-password" className="block text-gray-400 mb-1">Confirm Password</label>
@@ -130,13 +225,14 @@ const Signup: React.FC = () => {
                   required
                   className="w-full rounded-md border border-gray-300 bg-white py-3 px-4 text-gray-900 outline-none focus:border-blue-500"
                 />
+                {confirmPasswordError && <p className="text-red-500 text-xs mt-1">{confirmPasswordError}</p>}
               </div>
               <button type="submit" className="w-full bg-gradient-to-r from-blue-400 to-blue-600 py-3 mt-6 text-center text-white rounded-md font-semibold">Sign Up</button>
             </form>
           </div>
           <div className="mt-4">
             <p className="text-center text-sm text-gray-600 mt-4">
-              Already have an account? 
+              Already have an account?
               <Link to="/auth/login" className="text-blue-600 hover:underline ml-1">Sign In</Link>
             </p>
           </div>
@@ -176,9 +272,10 @@ const Signup: React.FC = () => {
               </div>
               {verificationError && <p className="text-red-500 mt-4 text-sm">{verificationError}</p>}
             </form>
+            <ToastContainer position="bottom-right" />
           </div>
         </div>
-        
+
         <div className="hidden md:block bg-slate-500 w-full md:w-96 h-auto rounded-xl md:rounded-none">
           <img src={img.bg} alt="Background" className="w-full h-full object-cover rounded-e-xl md:rounded-none" />
         </div>
