@@ -113,7 +113,7 @@ const AdminNavbar: React.FC = () => {
             </>
           ) : (
             <button
-              onClick={() => navigate(`/auth/adminlogin`)}
+              onClick={() => navigate(`/admin/adminlogin`)}
               className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md flex items-center transition-colors"
             >
               <FiLogIn className="mr-2" />

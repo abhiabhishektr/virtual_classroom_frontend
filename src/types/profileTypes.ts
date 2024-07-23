@@ -1,8 +1,7 @@
 
 export interface Profile {
-    // username: string;
-    name: string;
-    // email: string;
-    // phone: string;
-    // password: string;
+    username?: string;
+    name?: string;
+    phone?: string;
+    profilePicture?: string | null;
   }

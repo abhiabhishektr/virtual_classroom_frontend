@@ -3,7 +3,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
-import { PublicRoute, ProtectedRoute } from '../routes/CustomRoute';
+import { ProtectedRoute } from '../routes/CustomRoute';
 const AppRoutes: React.FC = () => {
   return (
     <Routes>

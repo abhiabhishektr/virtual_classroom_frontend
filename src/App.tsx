@@ -1,54 +1,68 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// src/App.tsx
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from './redux/store';
 import AuthRoutes from './routes/AuthRoutes';
 import AppRoutes from './routes/AppRoutes';
 import Navbar from './components/Shared/Navbar';
-import AdminNavbar from './components/Admin/AdminNavbar';
-import AdminDashboard from './components/Admin/AdminDashboard';
-import AdminUsers from './components/Admin/AdminUsers';
-import ProtectedRoute from './components/Auth/ProtectedRoute';
-import AdminProtectedRoute from './components/Auth/AdminProtectedRoute';
-import { useAuth } from './hooks/useAuth';
 import AdminRoutes from './routes/AdminRoutes';
-
-
-// const AdminRoutes: React.FC = () => (
-//   <Routes>
-//     <Route path="/" element={<AdminDashboard />} />
-//     <Route path="/users" element={<AdminUsers />} />
-//   </Routes>
-// );
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Loader from './components/Shared/Loader';
+import { useAuth } from './hooks/useAuth';
 
 const AppContent: React.FC = () => {
+  const { isAuthenticated} = useAuth(); //isAdminAuthenticated , ,logout 
+  const navigate = useNavigate();
+
   const location = useLocation();
-  const { isAuthenticated, isAdminAuthenticated } = useAuth();
   const isAuthRoute = location.pathname.startsWith('/auth');
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const shouldShowNavbar = !isAuthRoute && !isAdminRoute;
+  const isLoading = useSelector((state: RootState) => state.profile.loading);
+
+  useEffect(() => {
+    if (isAuthenticated && isAuthRoute) {
+      navigate('/', { replace: true });
+    }
+    // if (isAdminAuthenticated && isAdminRoute) {
+    //   navigate('/admin', { replace: true });
+      
+    // }
+  }, [isAuthenticated, isAuthRoute, navigate]);
+
+
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.pointerEvents = 'none';
+    } else {
+      document.body.style.overflow = 'unset';
+      document.body.style.pointerEvents = 'auto';
+    }
+//Disables scrolling and interaction on the page while loading
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.pointerEvents = 'auto';
+    };
+  }, [isLoading]);
 
   return (
     <div className="App">
-      {isAdminRoute ? <AdminNavbar /> : !isAuthRoute && <Navbar />}
+      <ToastContainer />
+      {isLoading && <Loader />}
+      {shouldShowNavbar && <Navbar />}
 
       <div className="container mx-auto">
         <Routes>
           <Route path="/auth/*" element={<AuthRoutes />} />
           <Route
             path="/*"
-            element={
-              // <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <AppRoutes />
-              // </ProtectedRoute>
-            }
+            element={<AppRoutes />}
           />
           <Route
             path="/admin/*"
-            element={
-              // <AdminProtectedRoute isAuthenticated={isAuthenticated} isAdmin={isAdminAuthenticated}>
-                <AdminRoutes />
-              // </AdminProtectedRoute>
-            }
+            element={<AdminRoutes />}
           />
         </Routes>
       </div>

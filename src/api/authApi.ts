@@ -4,50 +4,88 @@ import { AUTH_ENDPOINT } from '../utils/constants';
 // import { ErrorResponse } from '../utils/constants';
 
 interface RegisterUserInput {
-    email: string;
-    password: string;
-    name: string;
+  email: string;
+  password: string;
+  name: string;
+  otp: string;
 }
 
 interface RegisterUserResponse {
-    message: string;
-    // other possible fields
+  message: string;
+  // other possible fields
 }
 
 
-export async function registerUser({ email, password, name }: RegisterUserInput): Promise<RegisterUserResponse> {
-    try {
-      const response = await axiosInstance.post<RegisterUserResponse>(`${AUTH_ENDPOINT}/register`, { email, password, name });
-      console.log('User registration successful:', response);
-      return response.data;
-    } catch (error: any) {
-      if (error.response && error.response.data) {
-        console.error('User registration failed:', error.response.data);
-        return error.response.data; // Return the error response to handle in the calling function
-      }
-      console.error('User registration failed:', error);
-      throw new Error('An unexpected error occurred'); // Return a generic error message
+export async function registerUser({ email, password, name, otp }: RegisterUserInput): Promise<any> {
+  try {
+    const response = await axiosInstance.post<RegisterUserResponse>(`${AUTH_ENDPOINT}/register`, { email, password, name, otp });
+    console.log('User registration successful:', response);
+    return response;
+  } catch (error: any) {
+
+    if (error.message && error.message === 'Invalid OTP') {
+      return error.message;
     }
+    console.error('User registration failed:', error);
+    throw new Error('An unexpected error occurred'); // Return a generic error message
   }
+}
 
 
-export const verifyOTP = async (email: string, otp: string): Promise<any> => {
-    try {
-        const response = await axiosInstance.post(`${AUTH_ENDPOINT}/verify-otp`, { email, otp });
-        return response; // Assuming backend sends back some data on successful verification
-    } catch (error) {
-        console.error('OTP verification failed:', error);
-        throw error;
-    }
+
+export const sendEmailForOTP = async (email: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.post(`${AUTH_ENDPOINT}/send-otp`, { email });
+    return response; // Assuming backend sends back some data on successful OTP request
+  } catch (error) {
+    console.error('Failed to send OTP email:', error);
+    throw error;
+  }
 };
 
+
+export const reSendOTP = async (email: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.post(`${AUTH_ENDPOINT}/resend-otp`, { email });
+    return response; // Assuming backend sends back some data on successful OTP request
+  } catch (error) {
+    console.error('Failed to send OTP email:', error);
+    throw error;
+  }
+};
+
+
+
+
 export const Userlogin = async (email: string, password: string): Promise<any> => {
-    try {
-      const response = await axiosInstance.post(`${AUTH_ENDPOINT}/login`, { email, password });
-      console.log('Login successful:', response);
-      return response; // Assuming backend sends back some data on successful login
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
-    }
-  };
+  try {
+    const response = await axiosInstance.post(`${AUTH_ENDPOINT}/login`, { email, password });
+    console.log('Login successful:', response);
+    return response; // Assuming backend sends back some data on successful login
+  } catch (error) {
+    console.error('Login failed:', error);
+    throw error;
+  }
+};
+
+
+export const forgotPasswordOTP = async (email: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.post(`${AUTH_ENDPOINT}/forgot-passwordOTP`, { email });
+    return response; // Assuming backend sends back some data on successful login
+  } catch (error) {
+    console.error('Login failed:', error);
+    throw error;
+  }
+};
+
+export const forgotPassword = async (email: string, password: string, otp: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.post(`${AUTH_ENDPOINT}/forgot-password`, { email, password ,otp});
+    console.log('Login successful:', response);
+    return response; // Assuming backend sends back some data on successful login
+  } catch (error) {
+    console.error('Login failed:', error);
+    throw error;
+  }
+};

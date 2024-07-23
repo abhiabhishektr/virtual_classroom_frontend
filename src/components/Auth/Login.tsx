@@ -76,11 +76,11 @@ const Login: React.FC = () => {
             </div>
             <p className="text-center text-2xl font-bold">login</p>
             <p className="text-center text-sm text-gray-600">Welcome back! Please log in to access your account.</p>
-            {/* <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-4">
               <GoogleShadowDom />
 
-            </div> */}
-            {/* <p className="text-center text-sm text-gray-600 mt-4">Or Continue With</p> */}
+            </div>
+            <p className="text-center text-sm text-gray-600 mt-4">Or Continue With</p>
             <form className="mt-4" onSubmit={handleSubmit}>
               <div className="mt-1 text-sm">
                 <label htmlFor="username" className="block text-gray-400 mb-1">Username or Email</label>
@@ -125,7 +125,7 @@ const Login: React.FC = () => {
             </p>
             <p className="text-center text-sm text-gray-600 mt-1">
               Are you an Admin?
-              <Link to="/auth/adminlogin" className="text-blue-600 hover:underline ml-1">Login Here</Link>
+              <Link to="/admin/adminlogin" className="text-blue-600 hover:underline ml-1">Login Here</Link>
             </p>
           </div>
         </div>

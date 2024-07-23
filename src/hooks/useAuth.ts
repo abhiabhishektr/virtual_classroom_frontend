@@ -20,7 +20,7 @@ export const useAuth = () => {
     localStorage.setItem('authToken', accessToken);
     Cookies.set('refreshToken', refreshToken, { secure: true, httpOnly: true });
     setIsAuthenticated(true);
-  };
+  }; //
 
   const setadminLogin = (accessToken: string, refreshToken: string) => {
     console.log('Login successful:', accessToken, refreshToken);

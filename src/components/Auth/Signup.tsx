@@ -1,39 +1,36 @@
+// src/components/Auth/Signup.tsx
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import img from '../../assets/images/img';
-import { registerUser } from '../../api/authApi';
-import { verifyOTP } from '../../api/authApi';
-import { useNavigate } from 'react-router-dom';
-
-import { toast, ToastContainer } from 'react-toastify';
+import { registerUser, sendEmailForOTP ,reSendOTP } from '../../api/authApi';
 import 'react-toastify/dist/ReactToastify.css';
-import Loader from "../Shared/Loader";
+import { useAuth } from "../../hooks/useAuth";
 
-
-
-// import { useDispatch, useSelector } from 'react-redux';
-// import { setLoading } from '../redux/slices/loadingSlice'; // Adjust path as per your project structure
+import { useDispatch } from 'react-redux';
+import { setLoading } from '../../redux/slices/user/profileSlice';
+import { showToast } from '../../utils/toast';
 
 
 
 const Signup: React.FC = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [lod, setLod] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showSignupForm, setShowSignupForm] = useState<boolean>(true);
-  const [otp, setOtp] = useState<string>("");
+  const [showOtpForm, setShowOtpForm] = useState<boolean>(false);
+
   const [timer, setTimer] = useState<number>(120);
   const [verificationError, setVerificationError] = useState<string>("");
-
+  const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
   const [nameError, setNameError] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
-
-  const navigate = useNavigate();
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -76,11 +73,81 @@ const Signup: React.FC = () => {
     }
   };
 
-  const handleSignUp = async (e: FormEvent) => {
+  const handleInitiateSignUp = async (e: FormEvent) => {
     e.preventDefault();
 
+    if (emailError) {
+      console.error('Please fix the email error before submitting');
+      showToast('Please fix the email error before submitting.', 'error');
+      return;
+    }
 
-    if (nameError || emailError || passwordError || confirmPasswordError) {
+    try {
+      dispatch(setLoading(true));
+      const res = await sendEmailForOTP(email);
+      console.log('res', res);
+
+      if (res && res.message === 'User already exists') {
+        
+        setEmailError("User already exists");
+        return;
+      }
+
+      console.log('Email sent successfully');
+      setShowSignupForm(false);
+      setShowOtpForm(true);
+      setTimer(120);
+    } catch (error: any) {
+      if (error && error.message=='User already exists') {
+        setEmailError("User already exists");
+      showToast('Already Existing user. Please Go with Sign In', 'info');
+      return
+      }
+      console.error('Error sending email:', error.message);
+      showToast('Error sending OTP. Please try again..', 'error');
+
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    setConfirmPasswordError("");
+
+    const newOtp = [...otp];
+    newOtp[index] = e.target.value;
+    setOtp(newOtp);
+
+    // Move focus to the next input field
+    if (e.target.value.length === 1 && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`) as HTMLInputElement;
+      nextInput?.focus();
+    }
+  };
+
+  const handleSubmitOTP = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!otp) {
+      showToast('Please enter the OTP', 'error');
+      return;
+    }
+    try {
+      dispatch(setLoading(true));
+     await handleRegisterUser();
+    } catch (error) {
+      console.log(1);
+      
+      console.error('Error verifying OTP:', (error as Error).message);
+      showToast('Error verifying OTP. Please try again.', 'error');
+
+      setVerificationError('Error verifying OTP. Please try again.');
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  const handleRegisterUser = async () => {
+    if (nameError || passwordError || confirmPasswordError) {
       console.error('Please fix the errors before submitting');
       return;
     }
@@ -91,59 +158,45 @@ const Signup: React.FC = () => {
     }
 
     try {
-
-      setLod(true);
-      const res = await registerUser({ email, password, name });
-      console.log('Response:', res);
+      dispatch(setLoading(true));
+      const res = await registerUser({ email, password, name, otp: otp.join('') });
+   
       
-      setLod(false);
-
-      if (res && res.message === 'User already exists') {
-        setEmailError("User already exists");
-        return;
+      if (res && res === 'Invalid OTP') {
+        setConfirmPasswordError("Invalid OTP");
+        showToast('Invalid OTP', 'error');
+        return
       }
       console.log('User registered successfully');
-      setShowSignupForm(false);
-      setTimer(120);
+
+      login(res.tokens.accessToken, res.tokens.refreshToken);
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     } catch (error: any) {
-      console.error('Error signing up:', error.message);
-      setLod(false);
+      console.log('error', error);
+      
+      console.log(122);
+   
+      
+      console.error('Error registering user:', error.message);
+      showToast('Error verifying OTP. Please try again.', 'error');
 
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
-  const handleOtpChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setOtp(e.target.value);
-  };
-
-  const handleSubmitOTP = async (e: FormEvent) => {
-    e.preventDefault();
-    // ===
-    if (!otp) {
-      toast.error('Please enter the OTP');
-      return;
-    }
+  const handleResendOTP = async () => {
     try {
-      const response = await verifyOTP(email, otp);
-      if (response.message === 'Invalid OTP') {
-        toast.error('Invalid OTP. Please try again.');
-        setVerificationError('Invalid OTP. Please try again.');
-      } else {
-        toast.success('OTP verified successfully!');
-        setTimeout(() => {
-          navigate('/auth/login');
-        }, 1000); // Adjust the delay as needed
-      }
-    } catch (error) {
-      console.error('Error verifying OTP:', (error as Error).message);
-      toast.error('Error verifying OTP. Please try again.');
-      setVerificationError('Error verifying OTP. Please try again.');
-    }
-  };
+      await reSendOTP(email);
+      setTimer(120);
+      showToast('OTP resent successfully', 'success');
 
-  const handleResendOTP = () => {
-    setTimer(120);
-    // Resend OTP logic here
+    } catch (error: any) {
+      console.error('Error resending OTP:', error.message);
+      showToast('Error resending OTP. Please try again.', 'error');
+    }
   };
 
   useEffect(() => {
@@ -156,38 +209,21 @@ const Signup: React.FC = () => {
     return () => clearInterval(interval);
   }, [timer]);
 
-if (lod) {
-  return (
-  <div className="flex justify-center items-center min-h-screen">
-    <Loader/>
-  </div>
-  )
-}
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="flex flex-col md:flex-row w-full md:w-auto">
         <div className={`w-full md:w-96 rounded-s-xl bg-white p-8 shadow-lg flex flex-col justify-between ${showSignupForm ? '' : 'hidden'}`}>
+          <div className="absolute top-2 right-6 text-sm text-gray-500">1/2</div>
           <div>
             <div className="flex justify-center mb-4">
               <img src={img.logo} alt="Logo" className="w-12 h-12 rounded-full" />
             </div>
             <p className="text-center text-2xl font-bold">Sign Up</p>
+
             <p className="text-center text-sm text-gray-600">Create your account to get started.</p>
-            <form className="mt-4" onSubmit={handleSignUp}>
-              <div className="mt-1 text-sm">
-                <label htmlFor="name" className="block text-gray-400 mb-1">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  value={name}
-                  onChange={handleNameChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 bg-white py-3 px-4 text-gray-900 outline-none focus:border-blue-500"
-                />
-                {nameError && <p className="text-red-500 text-xs mt-1">{nameError}</p>}
-              </div>
+            <form className="mt-4" onSubmit={handleInitiateSignUp}>
               <div className="mt-1 text-sm">
                 <label htmlFor="email" className="block text-gray-400 mb-1">Email</label>
                 <input
@@ -200,6 +236,40 @@ if (lod) {
                   className="w-full rounded-md border border-gray-300 bg-white py-3 px-4 text-gray-900 outline-none focus:border-blue-500"
                 />
                 {emailError && <p className="text-red-500 text-xs mt-1">{emailError}</p>}
+              </div>
+              <button type="submit" className="w-full bg-gradient-to-r from-blue-400 to-blue-600 py-3 mt-6 text-center text-white rounded-md font-semibold">Send OTP</button>
+            </form>
+          </div>
+          <div className="mt-4">
+            <p className="text-center text-sm text-gray-600 mt-4">
+              Already have an account?
+              <Link to="/auth/login" className="text-blue-600 hover:underline ml-1">Sign In</Link>
+            </p>
+          </div>
+        </div>
+
+        <div className={`w-full md:w-96 rounded-s-xl bg-white p-8 shadow-lg flex flex-col justify-between ${showOtpForm ? '' : 'hidden'}`}>
+        <div className="absolute top-2 right-6 text-sm text-gray-500">2/2</div>
+
+          <div>
+            <div className="flex justify-center mb-4">
+              <img src={img.logo} alt="Logo" className="w-12 h-12 rounded-full" />
+            </div>
+            <p className="text-center text-2xl font-bold">OTP Verification</p>
+            <p className="text-xs text-center text-gray-400 mb-1 ">OTP sent to {email}</p>
+            <form className="mt-4" onSubmit={handleSubmitOTP}>
+              <div className="mt-1 text-sm">
+                <label htmlFor="name" className="block text-gray-400 mb-1">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  value={name}
+                  onChange={handleNameChange}
+                  required
+                  className="w-full rounded-md border border-gray-300 bg-white py-3 px-4 text-gray-900 outline-none focus:border-blue-500"
+                />
+                {nameError && <p className="text-red-500 text-xs mt-1">{nameError}</p>}
               </div>
               <div className="mt-1 text-sm">
                 <label htmlFor="password" className="block text-gray-400 mb-1">Password</label>
@@ -227,37 +297,23 @@ if (lod) {
                 />
                 {confirmPasswordError && <p className="text-red-500 text-xs mt-1">{confirmPasswordError}</p>}
               </div>
-              <button type="submit" className="w-full bg-gradient-to-r from-blue-400 to-blue-600 py-3 mt-6 text-center text-white rounded-md font-semibold">Sign Up</button>
-            </form>
-          </div>
-          <div className="mt-4">
-            <p className="text-center text-sm text-gray-600 mt-4">
-              Already have an account?
-              <Link to="/auth/login" className="text-blue-600 hover:underline ml-1">Sign In</Link>
-            </p>
-          </div>
-        </div>
-
-        <div className={`w-full md:w-96 rounded-s-xl bg-white p-8 shadow-lg flex flex-col justify-between ${showSignupForm ? 'hidden' : ''}`}>
-          <div>
-            <div className="flex justify-center mb-4">
-              <img src={img.logo} alt="Logo" className="w-12 h-12 rounded-full" />
-            </div>
-            <p className="text-center text-2xl font-bold">OTP Verification</p>
-            <form className="mt-4" onSubmit={handleSubmitOTP}>
-              <div className="mt-1 text-sm">
-                <label htmlFor="otp" className="block text-gray-400 mb-1">Enter OTP</label>
-                <input
-                  type="text"
-                  name="otp"
-                  id="otp"
-                  value={otp}
-                  onChange={handleOtpChange}
-                  required
-                  className="w-full rounded-md border border-gray-300 bg-white py-3 px-4 text-gray-900 outline-none focus:border-blue-500"
-                />
+              <div className="flex items-center space-x-2 mt-1 text-sm px-2">
+                <label htmlFor="otp" className="text-gray-400">Enter OTP</label>
+                <div className="flex space-x-2">
+                  {otp.map((value, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      id={`otp-${index}`}
+                      value={value}
+                      onChange={(e) => handleOtpChange(e, index)}
+                      maxLength={1}
+                      className="w-9 h-9 text-center rounded-md border border-gray-300 bg-white text-gray-900 outline-none focus:border-blue-500"
+                    />
+                  ))}
+                </div>
               </div>
-              <button type="submit" className="w-full bg-gradient-to-r from-blue-400 to-blue-600 py-3 mt-6 text-center text-white rounded-md font-semibold">Verify OTP</button>
+              <button type="submit" className="w-full bg-gradient-to-r from-blue-400 to-blue-600 py-3 mt-6 text-center text-white rounded-md font-semibold">Verify OTP and Sign Up</button>
               <div className="mt-4 text-center">
                 {timer > 0 ? (
                   <p className="text-gray-500">Resend OTP in {`${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, '0')}`}</p>
@@ -272,7 +328,6 @@ if (lod) {
               </div>
               {verificationError && <p className="text-red-500 mt-4 text-sm">{verificationError}</p>}
             </form>
-            <ToastContainer position="bottom-right" />
           </div>
         </div>
 
