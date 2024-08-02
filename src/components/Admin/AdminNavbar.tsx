@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiGrid, FiUsers, FiBookOpen, FiBell } from 'react-icons/fi';
 import { FiUser,FiLogIn, FiLogOut } from 'react-icons/fi';
+import { FaFlickr } from 'react-icons/fa';
 
 import { useAuth} from '../../hooks/useAuth';
 
@@ -77,6 +78,18 @@ const AdminNavbar: React.FC = () => {
           >
             <FiBookOpen className="mr-2" />
             Course Oversight
+          </Link>
+          <Link
+            to="/admin/users-requests"
+            onClick={() => handleButtonClick('users requests')}
+            className={`${
+              selectedButton === 'users requests'
+                ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
+                : 'text-gray-500'
+            } hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-400 hover:text-white px-4 py-2 rounded-full flex items-center transition-colors`}
+          >
+            <FaFlickr  className="mr-2" />
+            Requests
           </Link>
           <Link
             to="/admin/push-notifications"

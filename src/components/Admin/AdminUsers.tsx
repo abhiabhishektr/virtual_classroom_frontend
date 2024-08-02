@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiSearch, FiCheckCircle, FiXCircle } from 'react-icons/fi';
-import { allusers ,blockUser, unblockUser } from '../../api/admin/adminUserMan'; // Adjust the import path as necessary
+import { allusers, blockUser, unblockUser } from '../../api/admin/adminUserMan';
 
 interface User {
   id: number;
@@ -10,55 +10,56 @@ interface User {
 }
 
 const AdminUsersPage: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>(''); // State to store the search term entered by the user
-  const [users, setUsers] = useState<User[]>([]); // State to store the list of users fetched from the backend
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [users, setUsers] = useState<User[]>([]);
+  const [confirmAction, setConfirmAction] = useState<{ userId: string; action: 'block' | 'unblock' } | null>(null);
 
   useEffect(() => {
-    fetchUsers(); // Fetch users from the backend when the component mounts
+    fetchUsers();
   }, []);
 
-  // Function to fetch users from the backend
   const fetchUsers = async () => {
     try {
-      const response = await allusers() // Replace with your backend API endpoint
-      console.log('Rea:', response);
-      
-      setUsers(response); // Update the users state with the fetched data
+      const response = await allusers();
+      setUsers(response);
     } catch (error) {
-      console.error('Error fetching users:', error); // Log an error if fetching users fails
+      console.error('Error fetching users:', error);
     }
   };
 
-  // Event handler for updating the search term state based on user input
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  // Function to toggle the block/unblock status of a user
-  const handleBlockToggle = async (userId: any) => {
+  const handleBlockToggle = (userId: string, isBlocked: boolean) => {
+    setConfirmAction({
+      userId,
+      action: isBlocked ? 'unblock' : 'block'
+    });
+  };
+
+  const confirmBlockToggle = async () => {
+    if (!confirmAction) return;
+
     try {
-      console.log(`Toggling block status for user with ID ${userId}`);
-      
-      // Check if the user is currently blocked
-      
-      if (users.find(user => user.email === userId)?.blocked) {
-        
-        await unblockUser(userId); // If blocked, unblock the user via API call
+      const { userId, action } = confirmAction;
+      if (action === 'block') {
+        await blockUser(userId);
       } else {
-        await blockUser(userId); // If not blocked, block the user via API call
+        await unblockUser(userId);
       }
 
-      // Update local state after successful API call to reflect the updated user block status
       const updatedUsers = users.map(user =>
-        user.id === userId ? { ...user, blocked: !user.blocked } : user
+        user.email === userId ? { ...user, blocked: action === 'block' } : user
       );
       setUsers(updatedUsers);
     } catch (error) {
-      console.error('Error toggling user block status:', error); // Log an error if toggling user block status fails
+      console.error('Error toggling user block status:', error);
     }
+
+    setConfirmAction(null);
   };
 
-  // Filter users based on the search term entered by the user
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -86,19 +87,19 @@ const AdminUsersPage: React.FC = () => {
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">{user.name}</h3>
               <button
-                onClick={() => handleBlockToggle(user.email)}
+                onClick={() => handleBlockToggle(user.email, user.blocked)}
                 className={`px-3 py-1 rounded-full ${
-                  user.blocked ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+                  user.blocked ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                 }`}
               >
                 {user.blocked ? (
                   <>
-                    <FiXCircle className="inline-block mr-1" />
+                    <FiCheckCircle className="inline-block mr-1" />
                     Unblock
                   </>
                 ) : (
                   <>
-                    <FiCheckCircle className="inline-block mr-1" />
+                    <FiXCircle className="inline-block mr-1" />
                     Block
                   </>
                 )}
@@ -111,6 +112,36 @@ const AdminUsersPage: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {confirmAction && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg">
+            <h3 className="text-lg font-semibold mb-4">
+              Confirm {confirmAction.action === 'block' ? 'Block' : 'Unblock'}
+            </h3>
+            <p>
+              Are you sure you want to {confirmAction.action}{' '}
+              {users.find(u => u.email === confirmAction.userId)?.name}?
+            </p>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setConfirmAction(null)}
+                className="mr-2 px-4 py-2 bg-gray-200 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmBlockToggle}
+                className={`px-4 py-2 rounded text-white ${
+                  confirmAction.action === 'block' ? 'bg-red-500' : 'bg-green-500'
+                }`}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

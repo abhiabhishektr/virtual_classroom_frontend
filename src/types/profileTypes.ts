@@ -5,3 +5,8 @@ export interface Profile {
     phone?: string;
     profilePicture?: string | null;
   }
+
+  
+export interface TeacherRequestResponse {
+ formsubmit:boolean;
+}

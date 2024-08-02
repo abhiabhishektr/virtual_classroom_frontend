@@ -1,0 +1,69 @@
+// src/pages/Profile.tsx
+
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Routes, Route } from 'react-router-dom';
+import Sidebar from '../components/Profile/Sidebar';
+import PersonalDetails from '../components/Profile/PersonalDetails';
+import ProfileOverview from '../components/Profile/ProfileOverview';
+import { getProfile } from "../api/profileApi";
+import { setProfileData, setLoading, setError } from '../redux/slices/user/profileSlice';
+import { RootState } from '../redux/store';
+import Loader from "../components/Shared/Loader";
+import RegisterAsTeacher from '../components/Profile/TeacherRegistration';
+import CourseList from '../pages/Teacher/CourseList';
+import CourseRegistration from '../pages/Teacher/CourseRegistration';
+import CourseEdit from '../pages/Teacher/CourseEdit';
+import TeacherProtectedRoute from './ProtectedRoute/TeacherProtectedRoute';
+
+const ProfilePage: React.FC = () => {
+  const dispatch = useDispatch();
+  const { name, email, loading, error } = useSelector((state: RootState) => state.profile);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!name && !email) {
+        dispatch(setLoading(true));
+        dispatch(setError(null));
+        try {
+          const data = await getProfile();
+          dispatch(setProfileData(data));
+        } catch (error) {
+          dispatch(setError("Failed to fetch profile data"));
+        } finally {
+          dispatch(setLoading(false));
+        }
+      }
+    };
+
+    fetchProfileData();
+  }, [dispatch, name, email]);
+
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen bg-gray-200"><Loader /></div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center min-h-screen bg-gray-200">{error}</div>;
+  }
+
+  return (
+    <div className="flex min-h-screen">
+      <Sidebar />
+      <main className="flex-1 p-8">
+        <Routes>
+          <Route path="/" element={<ProfileOverview />} />
+          <Route path="/edit-profile" element={<PersonalDetails />} />
+          <Route path="/teacher-registration" element={<RegisterAsTeacher />} /> 
+          <Route element={<TeacherProtectedRoute requiredRole="teacher" />}>
+            <Route path="/course-list" element={<CourseList />} />
+            <Route path="/course-registration" element={<CourseRegistration />} />
+            <Route path="/course-edit/:courseId" element={<CourseEdit />} />
+          </Route>
+        </Routes>
+      </main>
+    </div>
+  );
+};
+
+export default ProfilePage;

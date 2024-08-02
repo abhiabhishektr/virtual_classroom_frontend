@@ -26,8 +26,8 @@ const AdminLogin: React.FC = () => {
     try {
       const response = await adminLogin(username, password);
       if (response) {
-        console.log('Login successful:', response);
-        setadminLogin(response.tokens.accessToken, response.tokens.refreshToken);
+        
+       setadminLogin(response.tokens.accessToken, response.tokens.refreshToken);
         navigate('/admin/');
       }
     } catch (error) {

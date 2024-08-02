@@ -8,6 +8,8 @@ export interface ProfileState {
   email: string;
   phone: string;
   password: string;
+  profilePicture: string;
+  role: string;
   loading: boolean;
   error: string | null;
   isEditing: boolean;
@@ -18,6 +20,8 @@ const initialState: ProfileState = {
   name: '',
   email: '',
   phone: 'add your phone number',
+  role: 'user',
+  profilePicture: '',
   password: '****',
   loading: false,
   error: "null",

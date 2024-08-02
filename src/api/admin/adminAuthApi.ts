@@ -41,7 +41,6 @@ import { AUTH_ENDPOINT } from '../../utils/constants';
 export const  adminLogin = async (email: string, password: string): Promise<any> => {
   try {
     const response = await adminAxiosInstance.post(`${AUTH_ENDPOINT}/adminlogin`, { email, password });
-    console.log('Admin login successful:', response);
     return response; // Assuming backend sends back some data on successful login
   } catch (error) {
     console.error('Admin login failed:', error);
@@ -52,7 +51,6 @@ export const  adminLogin = async (email: string, password: string): Promise<any>
 export const  allusers = async (email: string, password: string): Promise<any> => {
   try {
     const response = await adminAxiosInstance.post(`${AUTH_ENDPOINT}/adminlogin`, { email, password });
-    console.log('Admin login successful:', response);
     return response; // Assuming backend sends back some data on successful login
   } catch (error) {
     console.error('Admin login failed:', error);
