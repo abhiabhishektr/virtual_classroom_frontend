@@ -17,8 +17,8 @@ export const addCourse = async (data: object): Promise<any> => {
 };
 
 // Edit an existing course
-export const editCourse = async (courseId: string, data: FormData): Promise<any> => {
-  const response = await axiosInstance.put(`${TEACHER_ENDPOINT}/${courseId}`, data, {
+export const editCourse = async (courseId: string, data: object): Promise<any> => {
+  const response = await axiosInstance.put(`${TEACHER_ENDPOINT}/courses/${courseId}`, data, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

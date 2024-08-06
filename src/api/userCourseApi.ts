@@ -1,0 +1,89 @@
+// src/api/userCourseApi.ts
+import { PROFILE_ENDPOINT } from '../utils/constants';
+import axiosInstance from './axiosInstance'; // Make sure axiosInstance is properly configured
+import { courseListingDTO } from "../types/courseListingDTO";
+import {ICourse} from "../types/CourseTypes";
+
+// // Define the Course interface
+// interface Course {
+//     id: string; // MongoDB ObjectId as a string
+//     title: string;
+//     description: string;
+//     imageUrl: string;
+//     fees: number;
+// }
+
+interface Purchase {
+    courseId: string;
+    courseTitle: string;
+    purchaseDate: string;
+    amount: number;
+  }
+  
+  interface PurchaseHistoryResponse {
+    data: Purchase[];
+  }
+
+// Add a new course for a user
+export const addUserCourse = async (data: object): Promise<any> => {
+    const response = await axiosInstance.post(`${PROFILE_ENDPOINT}/courses`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    console.log(response.data);
+    return response.data;
+};
+
+// Edit an existing user course
+export const editUserCourse = async (courseId: string, data: object): Promise<any> => {
+    const response = await axiosInstance.put(`${PROFILE_ENDPOINT}/courses/${courseId}`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    return response.data;
+};
+
+// Fetch a course by ID
+export const getUserCourseById = async (courseId: string): Promise<ICourse> => {
+    const response = await axiosInstance.get(`${PROFILE_ENDPOINT}/course/${courseId}`);
+    return response.data;
+};
+
+// Delete a user course
+export const deleteUserCourse = async (courseId: string): Promise<void> => {
+    await axiosInstance.delete(`${PROFILE_ENDPOINT}/courses/${courseId}`);
+};
+
+// Fetch all courses for a user
+
+
+export const getUserCourses = async (myLearnings: boolean = false): Promise<courseListingDTO[]> => {
+    if (myLearnings) {
+        const response = await axiosInstance.get<courseListingDTO[]>(`${PROFILE_ENDPOINT}/user-courses`);
+        return response.data;
+    }
+    const response = await axiosInstance.get<courseListingDTO[]>(`${PROFILE_ENDPOINT}/all-courses`);
+    return response.data;
+};
+
+
+
+export const coursesPurchased = async (): Promise<PurchaseHistoryResponse[]> => {
+    const response = await axiosInstance.get<PurchaseHistoryResponse[]>(`${PROFILE_ENDPOINT}/coursePurchaseHistory`);
+    return response.data;
+};
+
+
+
+// export const enrollCourse = async (courseId: string): Promise<EnrollmentResponse> => {
+//     const response = await axiosInstance.get<EnrollmentResponse>(`${PROFILE_ENDPOINT}/enroll-check?courseId=${courseId}`);
+//     return response.data;
+// }
+
+
+// interface EnrollmentResponse {
+//     success: boolean;
+//     message: string;
+//   }

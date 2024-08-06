@@ -51,5 +51,3 @@ export const { setProfileData, setLoading, setError, setIsEditing } = profileSli
 
 export default profileSlice.reducer;
 
-// You can also export the slice if needed
-// export const profileSlice;

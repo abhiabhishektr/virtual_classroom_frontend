@@ -19,7 +19,6 @@ const CourseEdit: React.FC = () => {
       if (courseId && !hasFetchedCourse.current) {
         hasFetchedCourse.current = true; // Prevent multiple fetches
         try {
-          // dispatch(setLoading(true));
           const courseData = await getCourseById(courseId);
           courseData.startDate = new Date(courseData.startDate).toISOString().split('T')[0]; // Convert to YYYY-MM-DD format
           setCourse(courseData);
@@ -27,9 +26,7 @@ const CourseEdit: React.FC = () => {
         } catch (error) {
           console.error('Error fetching course:', error);
           showToast('Error fetching course details. Please try again.', 'error');
-        } finally {
-          // dispatch(setLoading(false));
-        }
+        } 
       }
     };
 
@@ -41,9 +38,11 @@ const CourseEdit: React.FC = () => {
 
     try {
       dispatch(setLoading(true));
+      console.log(data);
+      
       await editCourse(courseId, data);
       showToast('Course updated successfully', 'success');
-      navigate('/teacher/courses'); // Redirect to course list or appropriate page
+      navigate('/profile/course-list'); // Redirect to course list or appropriate page
     } catch (error: unknown) {
       let errorMessage = 'Unknown error occurred';
       if (error instanceof Error) {
@@ -57,7 +56,12 @@ const CourseEdit: React.FC = () => {
   };
 
   if (!course) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-3xl mb-6 text-center ">Loading...</div>
+      </div>
+    );
+    
   }
 
   return (

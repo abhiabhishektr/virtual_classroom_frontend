@@ -9,6 +9,8 @@ export function AdminIsLoggedIn() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        console.log('Checking admin authentication...',isAdminAuthenticated);
+        
         checkAuthTokens();
         setIsLoading(false);
     }, [checkAuthTokens]);

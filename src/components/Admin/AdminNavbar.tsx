@@ -1,23 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FiGrid, FiUsers, FiBookOpen, FiBell } from 'react-icons/fi';
-import { FiUser,FiLogIn, FiLogOut } from 'react-icons/fi';
+import { FiUser, FiLogIn, FiLogOut } from 'react-icons/fi';
 import { FaFlickr } from 'react-icons/fa';
-
-import { useAuth} from '../../hooks/useAuth';
+// import { useAuth } from '../../hooks/useAuth';
 
 const AdminNavbar: React.FC = () => {
-  const [selectedButton, setSelectedButton] = useState<string | null>('Dashboard');
+  const location = useLocation();
+  const [selectedButton, setSelectedButton] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const navigate = useNavigate();
   
-  const { isAdminAuthenticated} = useAuth();
+  // const { isAdminAuthenticated } = useAuth();
+
   useEffect(() => {
     // Check if admin token exists in localStorage
-    // setIsLoggedIn(!!isAdminAuthenticated)
     const admintoken = localStorage.getItem('adminToken'); // Replace with your admintoken retrieval logic
     setIsLoggedIn(!!admintoken); // using truthy falsy logic
   }, []);
+
+  useEffect(() => {
+    // Set selected button based on current URL
+    const path = location.pathname;
+    if (path.includes('/admin/users-requests')) {
+      setSelectedButton('users requests');
+    } else if (path.includes('/admin/course-oversight')) {
+      setSelectedButton('Course Oversight');
+    } else if (path.includes('/admin/users')) {
+      setSelectedButton('Users');
+    } else if (path.includes('/admin/')) {
+      setSelectedButton('Dashboard');
+    } else if (path.includes('/admin/push-notifications')) {
+      setSelectedButton('Push Notifications');
+    } else {
+      setSelectedButton(null);
+    }
+  }, [location]);
 
   const handleButtonClick = (buttonName: string) => {
     setSelectedButton(buttonName);
@@ -88,7 +106,7 @@ const AdminNavbar: React.FC = () => {
                 : 'text-gray-500'
             } hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-400 hover:text-white px-4 py-2 rounded-full flex items-center transition-colors`}
           >
-            <FaFlickr  className="mr-2" />
+            <FaFlickr className="mr-2" />
             Requests
           </Link>
           <Link

@@ -32,7 +32,7 @@ export const  blockUser = async (userId: string): Promise<void> => {
 
 export const unblockUser = async (userId: string): Promise<void> => {
   try {
-    const response = await adminAxiosInstance.put(`${ADMIN_ENDPOINT}/admin/users/${userId}/unblock`);
+    const response = await adminAxiosInstance.put(`${ADMIN_ENDPOINT}/unblock/${userId}`);
     console.log(`User with ID ${userId} unblocked successfully:`, response);
   } catch (error) {
     console.error(`Failed to unblock user with ID ${userId}:`, error);

@@ -23,6 +23,7 @@ const AdminRoutes: React.FC = () => {
                     <Route path="/" element={<AdminDashboard />} />
                     <Route path="/users" element={<AdminUsers />} />
                     <Route path="/users-requests" element={< AdminTeacherRequests/>} />
+                    <Route path="/course-oversight" element={< AdminTeacherRequests/>} />
                 </Route>
             </Routes>
         </div>

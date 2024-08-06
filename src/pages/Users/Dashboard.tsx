@@ -1,62 +1,35 @@
 import React from "react";
-
+import hero from '../../assets/images/hero.jpg';
 const Dashboard: React.FC = () => {
   return (
-    // <div className="bg-gray-100 min-h-screen p-4">
-    //   <div className="max-w-7xl mx-auto">
-    //     {/* Header */}
-    //     <div className="bg-white shadow-md rounded-lg p-6 mb-4">
-    //       <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
-    //       <p className="text-gray-600">Welcome to your dashboard. Here you can find a quick overview of your activities.</p>
-    //     </div>
-
-    //     {/* Statistics */}
-    //     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-    //       <div className="bg-white shadow-md rounded-lg p-6">
-    //         <h2 className="text-lg font-semibold">Total Users</h2>
-    //         <p className="text-2xl font-bold">1,234</p>
-    //       </div>
-    //       <div className="bg-white shadow-md rounded-lg p-6">
-    //         <h2 className="text-lg font-semibold">Total Sales</h2>
-    //         <p className="text-2xl font-bold">$12,345</p>
-    //       </div>
-    //       <div className="bg-white shadow-md rounded-lg p-6">
-    //         <h2 className="text-lg font-semibold">New Signups</h2>
-    //         <p className="text-2xl font-bold">123</p>
-    //       </div>
-    //     </div>
-
-    //     {/* Recent Activities */}
-    //     <div className="bg-white shadow-md rounded-lg p-6 mb-4">
-    //       <h2 className="text-xl font-semibold">Recent Activities</h2>
-    //       <ul className="mt-4 space-y-2">
-    //         <li className="text-gray-600">User John Doe signed up</li>
-    //         <li className="text-gray-600">Order #12345 was placed</li>
-    //         <li className="text-gray-600">User Jane Smith updated her profile</li>
-    //       </ul>
-    //     </div>
-
-    //     {/* Placeholder for additional sections */}
-    //     <div className="bg-white shadow-md rounded-lg p-6">
-    //       <h2 className="text-xl font-semibold">Other Section</h2>
-    //       <p className="text-gray-600">This is a placeholder for another section of your dashboard.</p>
-    //     </div>
-    //   </div>
-    // </div>
-    <div className="min-h-screen bg-white p-4">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">User Dashboard</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md h-40">Card 1</div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md h-40">Card 2</div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md h-40">Card 3</div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md h-40">Card 4</div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md h-40">Card 5</div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md h-40">Card 6</div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md h-40">Card 4</div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md h-40">Card 5</div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md h-40">Card 6</div>
-      </div>
+  
+    <div className="bg-white">
+        <section className="bg-[#FCF8F1] bg-opacity-30 py-10 sm:py-16 lg:py-24">
+            <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
+                    <div>
+                        <p className="text-base font-semibold tracking-wider text-blue-600 uppercase">A platform for learners</p>
+                        <h1 className="mt-4 text-4xl font-bold text-black lg:mt-8 sm:text-6xl xl:text-8xl">Connect & learn from the experts</h1>
+                        <p className="mt-4 text-base text-black lg:mt-8 sm:text-xl">Grow your career fast with right mentor.</p>
+    
+                        <a href="#" title="" className="inline-flex items-center px-6 py-4 mt-8 font-semibold text-black transition-all duration-200 bg-blue-400 rounded-full lg:mt-16 hover:bg-yellow-400 focus:bg-yellow-400" role="button">
+                            Join for free
+                            <svg className="w-6 h-6 ml-8 -mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </a>
+    
+                        <p className="mt-5 text-gray-600">Already joined us? <a href="#" title="" className="text-black transition-all duration-200 hover:underline">Log in</a></p>
+                    </div>
+    
+                    <div>
+                        <img className="w-full" src={hero} alt="" />
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
+    
   );
 };
 

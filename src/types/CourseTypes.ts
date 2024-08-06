@@ -18,3 +18,22 @@ export interface CourseResponse extends CourseData {
   createdAt: string;
   updatedAt: string;
 }
+
+
+export interface ICourse extends Document {
+  _id: string;
+  title: string;
+  description: string;
+  duration: number;
+  startDate: Date;
+  fees: number;
+  instructorName: string;
+  instructorEmail: string;
+  category: string;
+  imageUrl: string;
+  creatorName: string;
+  creatorEmail: string;
+  isPurchased: boolean; // Add this field
+}
+
+// constants.ts

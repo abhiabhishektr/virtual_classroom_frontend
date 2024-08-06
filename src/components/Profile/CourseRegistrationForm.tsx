@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import { CourseData, CourseSubmissionData } from '../../types/CourseTypes';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import imageCompression from 'browser-image-compression';
 
 interface CourseRegistrationFormProps {
   mode: 'create' | 'edit';
@@ -48,17 +49,28 @@ const CourseRegistrationForm: React.FC<CourseRegistrationFormProps> = ({
     ...course,
   };
 
-  const handleChangeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-        setImageFile(file);
-      };
-      reader.readAsDataURL(file);
+        try {
+            const options = {
+                maxSizeMB: 10, // Maximum file size in MB
+                maxWidthOrHeight: 1024, // Max width or height to maintain aspect ratio
+                useWebWorker: true // web content to run scripts in background threads
+            };
+            const compressedFile = await imageCompression(file, options);
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result as string);
+                setImageFile(compressedFile);
+            };
+            reader.readAsDataURL(compressedFile);
+        } catch (error) {
+            console.error('Error compressing image:', error);
+        }
     }
-  };
+};
 
   return (
     <div className="max-w-6xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">

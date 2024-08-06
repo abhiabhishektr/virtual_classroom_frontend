@@ -1,5 +1,3 @@
-// src/components/Profile/PersonalDetails.tsx
-
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/store';
@@ -9,6 +7,7 @@ import { showToast } from '../../utils/toast';
 import ImageCropper from "../../libraries/ImageCropper";
 import uploadImage from "../../libraries/uploadImage";
 import axios from 'axios';
+import ChangePasswordPopup from './ChangePasswordPopup';
 
 const PersonalDetails: React.FC = () => {
   const dispatch = useDispatch();
@@ -16,11 +15,11 @@ const PersonalDetails: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(name);
   const [editedPhone, setEditedPhone] = useState(phone);
-
   const [selectedImage, setSelectedImage] = useState<string | null>(profilePicture);
   const [imageChanged, setImageChanged] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [croppingImage, setCroppingImage] = useState<string | null>(null);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   useEffect(() => {
     setEditedName(name);
@@ -39,7 +38,9 @@ const PersonalDetails: React.FC = () => {
     dispatch(setError(null));
     try {
       const updatedProfile = await updateProfile({ name: editedName, phone: editedPhone });
-      dispatch(setProfileData(updatedProfile));
+      console.log('Profile updated:', updatedProfile);
+      
+      dispatch(setProfileData(updatedProfile)); 
       setIsEditing(false);
       showToast('Profile updated successfully', 'success');
     } catch (error) {
@@ -71,7 +72,7 @@ const PersonalDetails: React.FC = () => {
       console.log('Image uploaded:', response.data);
       dispatch(setProfileData({ ...response.data, profilePicture: selectedImage }));
       showToast('Image uploaded successfully!', 'success');
-      
+
       setImageChanged(false);
       window.location.reload();
     } catch (error) {
@@ -99,6 +100,7 @@ const PersonalDetails: React.FC = () => {
       const imageUrl = await uploadImage(file);
       await updateProfile({ profilePicture: imageUrl });
       console.log('Image uploaded:', imageUrl);
+      dispatch(setProfileData({ profilePicture: imageUrl }));
 
       setSelectedImage(imageUrl);
       setImageChanged(true);
@@ -114,6 +116,10 @@ const PersonalDetails: React.FC = () => {
 
   const handleCropCancel = () => {
     setCroppingImage(null);
+  };
+
+  const handleChangePassword = () => {
+    setIsChangePasswordOpen(true);
   };
 
   return (
@@ -215,13 +221,26 @@ const PersonalDetails: React.FC = () => {
           <p className="mt-1">{phone}</p>
         )}
       </div>
-      <div className="mt-6">
+      <div className="mt-6 flex justify-between">
         {isEditing ? (
           <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded-md">Save</button>
         ) : (
           <button onClick={() => setIsEditing(true)} className="bg-blue-500 text-white px-4 py-2 rounded-md">Edit</button>
         )}
+        <button
+          onClick={handleChangePassword}
+          className="bg-yellow-500 text-white px-4 py-2 rounded-md"
+        >
+          Change Password
+        </button>
       </div>
+
+      {isChangePasswordOpen && (
+        <ChangePasswordPopup
+          visible={isChangePasswordOpen}
+          setVisible={setIsChangePasswordOpen}
+        />
+      )}
     </div>
   );
 };

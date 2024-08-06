@@ -15,6 +15,8 @@ import CourseList from '../pages/Teacher/CourseList';
 import CourseRegistration from '../pages/Teacher/CourseRegistration';
 import CourseEdit from '../pages/Teacher/CourseEdit';
 import TeacherProtectedRoute from './ProtectedRoute/TeacherProtectedRoute';
+import CoursePurchaseHistory from '../pages/Users/CoursePurchaseHistory';
+
 
 const ProfilePage: React.FC = () => {
   const dispatch = useDispatch();
@@ -54,12 +56,15 @@ const ProfilePage: React.FC = () => {
         <Routes>
           <Route path="/" element={<ProfileOverview />} />
           <Route path="/edit-profile" element={<PersonalDetails />} />
-          <Route path="/teacher-registration" element={<RegisterAsTeacher />} /> 
+          <Route path="/teacher-registration" element={<RegisterAsTeacher />} />
+          <Route path="/purchase-history" element={< CoursePurchaseHistory />} />
+
           <Route element={<TeacherProtectedRoute requiredRole="teacher" />}>
             <Route path="/course-list" element={<CourseList />} />
             <Route path="/course-registration" element={<CourseRegistration />} />
             <Route path="/course-edit/:courseId" element={<CourseEdit />} />
           </Route>
+
         </Routes>
       </main>
     </div>

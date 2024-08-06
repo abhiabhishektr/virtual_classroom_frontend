@@ -45,3 +45,17 @@ export const getTeacherRequestStatus = async (): Promise<AxiosResponse<TeacherRe
   return response; // Returning the full response
 };
 
+interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
+  // Add other fields if necessary
+}
+
+
+export const updatePassword = async (curr: string, newPass: string): Promise<ChangePasswordResponse> => {
+  const response = await axiosInstance.post<ChangePasswordResponse>(`${PROFILE_ENDPOINT}/change-password`, {
+    currentPassword: curr,
+    newPassword: newPass
+  });
+  return response.data;
+};
