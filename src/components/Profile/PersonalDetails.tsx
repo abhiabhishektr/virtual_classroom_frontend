@@ -123,7 +123,7 @@ const PersonalDetails: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-md rounded-xl bg-white shadow-md p-8">
+    <div className="w-full max-w-md mx-auto rounded-xl bg-white shadow-md p-8">
       <h2 className="text-2xl font-bold mb-4">Personal Details</h2>
 
       {croppingImage ? (

@@ -5,10 +5,16 @@ import GoogleShadowDom from '../../shadow/google';
 import { Userlogin } from '../../api/authApi';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+// import { Button } from "@/components/ui/button";
 
+
+// import { useDispatch } from "react-redux";
+// import { setProfileData } from "../../redux/slices/user/profileSlice";
 
 
 const Login: React.FC = () => {
+  // const dispatch = useDispatch();
+
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [usernameChange, setUsernameChange] = useState<string>("");
@@ -51,8 +57,9 @@ const Login: React.FC = () => {
     try {
       const res = await Userlogin(username, password);
       if (res) {
-        console.log('res', res);
+        console.log('res', res.userData);
 
+        // dispatch(setProfileData(res.userData));
         await login(res.tokens.accessToken, res.tokens.refreshToken);
         navigate('/');
         // setCommonerror('Login failed: ' + res.message);
@@ -114,6 +121,7 @@ const Login: React.FC = () => {
                 <Link to="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">Forgot Password?</Link>
               </div>
               <button type="submit" className="w-full bg-gradient-to-r from-blue-400 to-blue-600 py-3 mt-6 text-center text-white rounded-md font-semibold"> Login</button>
+
             </form>
             {commonerror && <p className="text-center text-Zinc-500 text-xs mt-1">{commonerror}</p>}
 

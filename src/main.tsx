@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 // import AppTesting from './Testing/AppTesting.tsx'// for testing only 
 import './main.css'
+import './index.css'
 
 
 import  {store} from './redux/store';

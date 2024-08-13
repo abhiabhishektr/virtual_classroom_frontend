@@ -2,29 +2,38 @@ import React, { useState, useEffect } from 'react';
 import CourseCard from '../../components/Profile/CourseCard';
 import SortBy from '../../components/Shared/SortBy';
 import SearchBar from '../../components/Shared/SearchBar';
+import Pagination from '../../components/Shared/Pagination';
 import { getUserCourses } from '../../api/userCourseApi'; // Import your API function
 import { courseListingDTO as Course } from '../../types/courseListingDTO';
+import { useDispatch } from 'react-redux';
+import { setLoading } from '../../redux/slices/user/profileSlice';
 
 const CourseListing: React.FC = () => {
+  const dispatch = useDispatch();
   const [courses, setCourses] = useState<Course[]>([]);
-  const [filteredCourses, setFilteredCourses] = useState<Course[]>([]); // Initialize with an empty array
-  const [loading, setLoading] = useState<boolean>(true);
+  const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
+
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortOption, setSortOption] = useState<string>('');
   const [showMyLearnings, setShowMyLearnings] = useState<boolean>(false);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [coursesPerPage] = useState<number>(8); // Number of courses per page
+
   // Fetch courses from the API
   useEffect(() => {
     const fetchCourses = async () => {
       try {
+        dispatch(setLoading(true));
         const response = await getUserCourses(showMyLearnings);
         setCourses(response);
         setFilteredCourses(response); // Initialize filteredCourses with response
       } catch (err) {
         setError('Failed to fetch courses.');
       } finally {
-        setLoading(false);
+        dispatch(setLoading(false));
       }
     };
 
@@ -54,6 +63,7 @@ const CourseListing: React.FC = () => {
     }
 
     setFilteredCourses(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
   }, [searchTerm, sortOption, courses]);
 
   const handleSearch = (term: string) => {
@@ -68,9 +78,13 @@ const CourseListing: React.FC = () => {
     setShowMyLearnings(prev => !prev);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // Pagination logic
+  const indexOfLastCourse = currentPage * coursesPerPage;
+  const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
+  const currentCourses = filteredCourses.slice(indexOfFirstCourse, indexOfLastCourse);
+  const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+
+
 
   if (error) {
     return <div>{error}</div>;
@@ -83,28 +97,46 @@ const CourseListing: React.FC = () => {
           <SearchBar onSearch={handleSearch} />
         </div>
         <div className="flex items-center space-x-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={showMyLearnings}
-              onChange={handleCheckboxChange}
-              className="form-checkbox"
-            />
-            <span>My Learnings</span>
+          <label className="flex items-center space-x-3">
+            <div className="relative">
+              <input
+                type="checkbox"
+                checked={showMyLearnings}
+                onChange={handleCheckboxChange}
+                className="sr-only"
+              />
+              <div
+                className={`relative h-6 w-11 bg-gray-200 rounded-full transition-colors duration-300 ease-in-out ${showMyLearnings ? 'bg-blue-600' : 'bg-gray-200'}`}
+              >
+                <span
+                  className={`absolute top-0 left-0 h-6 w-6 bg-white border border-gray-300 rounded-full transition-transform duration-300 ease-in-out ${showMyLearnings ? 'translate-x-5' : 'translate-x-0'}`}
+                />
+              </div>
+            </div>
+            <span className="text-gray-700 font-medium text-sm">My Learnings</span>
           </label>
+
+
           <div className="w-48">
             <SortBy onSort={handleSort} />
           </div>
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredCourses.length > 0 ? (
-          filteredCourses.map(course => (
+        {currentCourses.length > 0 ? (
+          currentCourses.reverse().map(course => (
             <CourseCard key={course.id} course={course} />
           ))
         ) : (
           <div>No courses found.</div>
         )}
+      </div >
+      <div className="flex justify-center mt-6">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

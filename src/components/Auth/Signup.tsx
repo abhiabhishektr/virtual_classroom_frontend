@@ -2,9 +2,11 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import img from '../../assets/images/img';
-import { registerUser, sendEmailForOTP ,reSendOTP } from '../../api/authApi';
+import { registerUser, sendEmailForOTP, reSendOTP } from '../../api/authApi';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../../hooks/useAuth";
+import GoogleShadowDom from '../../shadow/google';
+
 
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../redux/slices/user/profileSlice';
@@ -88,7 +90,7 @@ const Signup: React.FC = () => {
       console.log('res', res);
 
       if (res && res.message === 'User already exists') {
-        
+
         setEmailError("User already exists");
         return;
       }
@@ -98,10 +100,10 @@ const Signup: React.FC = () => {
       setShowOtpForm(true);
       setTimer(120);
     } catch (error: any) {
-      if (error && error.message=='User already exists') {
+      if (error && error.message == 'User already exists') {
         setEmailError("User already exists");
-      showToast('Already Existing user. Please Go with Sign In', 'info');
-      return
+        showToast('Already Existing user. Please Go with Sign In', 'info');
+        return
       }
       console.error('Error sending email:', error.message);
       showToast('Error sending OTP. Please try again..', 'error');
@@ -133,10 +135,10 @@ const Signup: React.FC = () => {
     }
     try {
       dispatch(setLoading(true));
-     await handleRegisterUser();
+      await handleRegisterUser();
     } catch (error) {
       console.log(1);
-      
+
       console.error('Error verifying OTP:', (error as Error).message);
       showToast('Error verifying OTP. Please try again.', 'error');
 
@@ -160,8 +162,8 @@ const Signup: React.FC = () => {
     try {
       dispatch(setLoading(true));
       const res = await registerUser({ email, password, name, otp: otp.join('') });
-   
-      
+
+
       if (res && res === 'Invalid OTP') {
         setConfirmPasswordError("Invalid OTP");
         showToast('Invalid OTP', 'error');
@@ -175,10 +177,10 @@ const Signup: React.FC = () => {
       }, 1000);
     } catch (error: any) {
       console.log('error', error);
-      
+
       console.log(122);
-   
-      
+
+
       console.error('Error registering user:', error.message);
       showToast('Error verifying OTP. Please try again.', 'error');
 
@@ -223,6 +225,14 @@ const Signup: React.FC = () => {
             <p className="text-center text-2xl font-bold">Sign Up</p>
 
             <p className="text-center text-sm text-gray-600">Create your account to get started.</p>
+
+            {/* Google Sign-In Button */}
+            <div className="flex justify-center mt-4">
+              <GoogleShadowDom />
+            </div>
+
+            <p className="text-center text-sm text-gray-600 mt-4">Or Continue With</p>
+
             <form className="mt-4" onSubmit={handleInitiateSignUp}>
               <div className="mt-1 text-sm">
                 <label htmlFor="email" className="block text-gray-400 mb-1">Email</label>
@@ -240,6 +250,7 @@ const Signup: React.FC = () => {
               <button type="submit" className="w-full bg-gradient-to-r from-blue-400 to-blue-600 py-3 mt-6 text-center text-white rounded-md font-semibold">Send OTP</button>
             </form>
           </div>
+
           <div className="mt-4">
             <p className="text-center text-sm text-gray-600 mt-4">
               Already have an account?
@@ -249,7 +260,7 @@ const Signup: React.FC = () => {
         </div>
 
         <div className={`w-full md:w-96 rounded-s-xl bg-white p-8 shadow-lg flex flex-col justify-between ${showOtpForm ? '' : 'hidden'}`}>
-        <div className="absolute top-2 right-6 text-sm text-gray-500">2/2</div>
+          <div className="absolute top-2 right-6 text-sm text-gray-500">2/2</div>
 
           <div>
             <div className="flex justify-center mb-4">

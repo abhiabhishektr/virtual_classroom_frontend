@@ -3,8 +3,11 @@ import { FiSearch, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 
 interface Course {
   id: string;
-  name: string;
-  blocked: boolean;
+  title: string;
+  description: string;
+  imageUrl: string;
+  fees: number;
+  isBlocked: boolean;
 }
 
 interface ConfirmAction {
@@ -17,6 +20,9 @@ interface CourseAdminListProps {
   onBlockToggle: (courseId: string, currentlyBlocked: boolean) => void;
 }
 
+const truncateText = (text: string, maxLength: number) => 
+  text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+
 const CourseAdminList: React.FC<CourseAdminListProps> = ({ courses, onBlockToggle }) => {
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [filteredCourses, setFilteredCourses] = React.useState<Course[]>(courses);
@@ -25,7 +31,7 @@ const CourseAdminList: React.FC<CourseAdminListProps> = ({ courses, onBlockToggl
   React.useEffect(() => {
     setFilteredCourses(
       courses.filter(course =>
-        course.name.toLowerCase().includes(searchTerm.toLowerCase())
+        course.title.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
   }, [searchTerm, courses]);
@@ -54,36 +60,34 @@ const CourseAdminList: React.FC<CourseAdminListProps> = ({ courses, onBlockToggl
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredCourses.map(course => (
-          <div key={course.id} className="bg-white rounded-lg p-4 shadow-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">{course.name}</h3>
-              <button
-                onClick={() => setConfirmAction({
-                  action: course.blocked ? 'unblock' : 'block',
-                  courseId: course.id
-                })}
-                className={`px-3 py-1 rounded-full ${
-                  course.blocked ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                }`}
-              >
-                {course.blocked ? (
-                  <>
-                    <FiCheckCircle className="inline-block mr-1" />
-                    Unblock
-                  </>
-                ) : (
-                  <>
-                    <FiXCircle className="inline-block mr-1" />
-                    Block
-                  </>
-                )}
-              </button>
-            </div>
-            <p className="text-sm">
-              Status: {course.blocked ? 'Blocked' : 'Active'}
-            </p>
+          <div key={course.id} className="bg-white rounded-lg p-4 shadow-md flex flex-col items-center max-w-xs mx-auto">
+            <img src={course.imageUrl} alt={course.title} className="w-full h-24 object-cover mb-4 rounded-md" />
+            <h3 className="text-sm font-semibold mb-2 text-center">{truncateText(course.title, 20)}</h3>
+            <p className="text-xs mb-2 text-center overflow-hidden text-ellipsis whitespace-nowrap">{truncateText(course.description, 50)}</p>
+            <p className="text-xs text-gray-600 mb-4">Fees: ${course.fees}</p>
+            <button
+              onClick={() => setConfirmAction({
+                action: course.isBlocked ? 'unblock' : 'block',
+                courseId: course.id
+              })}
+              className={`px-3 py-1 rounded-full text-white ${
+                course.isBlocked ? 'bg-green-500' : 'bg-red-500'
+              }`}
+            >
+              {course.isBlocked ? (
+                <>
+                  <FiCheckCircle className="inline-block mr-1" />
+                  Unblock
+                </>
+              ) : (
+                <>
+                  <FiXCircle className="inline-block mr-1" />
+                  Block
+                </>
+              )}
+            </button>
           </div>
         ))}
       </div>
@@ -96,7 +100,7 @@ const CourseAdminList: React.FC<CourseAdminListProps> = ({ courses, onBlockToggl
             </h3>
             <p>
               Are you sure you want to {confirmAction.action}{' '}
-              {courses.find(c => c.id === confirmAction.courseId)?.name}?
+              {courses.find(c => c.id === confirmAction.courseId)?.title}?
             </p>
             <div className="mt-4 flex justify-end">
               <button

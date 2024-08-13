@@ -6,12 +6,14 @@ import Dashboard from '../pages/Users/Dashboard';
 import Courses from '../pages/Teacher/Courses-listing';
 import { ProtectedRoute } from './ProtectedRoute/CustomRoute';
 import CourseDetail from '../components/user/CourseDetail';
+import NotFoundPage from '../pages/Page404';
 const AppRoutes: React.FC = () => {
 
   
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
+      <Route path="*" element={<NotFoundPage />} />
       {/* <Route path='/profile' element={<ProtectedRoute element={Profile} />} /> */}
       <Route path='/courses' element={<ProtectedRoute element={Courses} />} />
       <Route path='/course/:courseId' element={<ProtectedRoute element={CourseDetail} />} />

@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Loader from './components/Shared/Loader';
 import { useAuth } from './hooks/useAuth';
 
+
 // --------------------------------------------------
 import TestRoutes from './routes/TestRoutes';
 import ProfilePage from './routes/ProfileRoutes';
@@ -52,12 +53,14 @@ const AppContent: React.FC = () => {
   }, [isLoading]);
 
   return (
-    <div className="App">
+    <div className="App"> 
+     {/* style={{ height: '100%' }} */}
       <ToastContainer />
       {isLoading && <Loader />}
       {shouldShowNavbar && <Navbar />}
 
-      <div className="container mx-auto">
+      <div className="container mx-auto"  >
+      {/* style={{ height: 'calc(100vh - 64px)' }} */}
         <Routes>
           <Route
             path="/auth/*"

@@ -16,6 +16,7 @@ import CourseRegistration from '../pages/Teacher/CourseRegistration';
 import CourseEdit from '../pages/Teacher/CourseEdit';
 import TeacherProtectedRoute from './ProtectedRoute/TeacherProtectedRoute';
 import CoursePurchaseHistory from '../pages/Users/CoursePurchaseHistory';
+import CourseContents from '../pages/Teacher/CourseContentView';
 
 
 const ProfilePage: React.FC = () => {
@@ -63,6 +64,7 @@ const ProfilePage: React.FC = () => {
             <Route path="/course-list" element={<CourseList />} />
             <Route path="/course-registration" element={<CourseRegistration />} />
             <Route path="/course-edit/:courseId" element={<CourseEdit />} />
+            <Route path="/course-contents/:courseId" element={<CourseContents />} />
           </Route>
 
         </Routes>

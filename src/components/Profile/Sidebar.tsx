@@ -46,7 +46,7 @@ const Sidebar: React.FC = () => {
             Overview
           </Link>
           <Link to="/profile/edit-profile" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/edit-profile')}`}>
-            Edit Profile
+            Profile Management
           </Link>
           <Link to="/profile/teacher-registration" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/teacher-registration')}`}>
             Register as Teacher

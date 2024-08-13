@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import CourseAdminList from '../../components/Admin/CourseAdminList';
 import { getUserCourses } from '../../api/userCourseApi';
-import {courseListingDTO} from "../../types/courseListingDTO";
+import {courseListingAdminDTO} from "../../types/courseListingDTO";
 
 const CourseOversight: React.FC = () => {
-  const [courses, setCourses] = useState<courseListingDTO[]>([]);
+  const [courses, setCourses] = useState<courseListingAdminDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadCourses = async () => {
       try {
         const fetchedCourses = await getUserCourses();
+        console.log(fetchedCourses);
+        
         setCourses(fetchedCourses);
       } catch (error) {
         console.error('Failed to fetch courses:', error);

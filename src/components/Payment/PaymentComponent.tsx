@@ -41,7 +41,7 @@ const PaymentComponent: React.FC<PaymentComponentProps> = ({ courseId }) => {
             order_id: data.id,
             handler: async (response: any) => {
                 try {
-                    const result = await verifyPayment(response);
+                    const result = await verifyPayment(response,courseId);
                     console.log('Payment verification result:', result);
                     
                     if (result.success) {

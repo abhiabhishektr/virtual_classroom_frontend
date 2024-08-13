@@ -1,6 +1,5 @@
 import { TEACHER_ENDPOINT } from '../../utils/constants';
 import axiosInstance from '../axiosInstance'; // Make sure axiosInstance is properly configured
-import { AxiosResponse } from 'axios';
 
 
 // Add a new course
@@ -26,6 +25,16 @@ export const editCourse = async (courseId: string, data: object): Promise<any> =
   return response.data;
 };
 
+export const Contents = async (courseId: string, data: object): Promise<any> => {
+  const response = await axiosInstance.put(`${TEACHER_ENDPOINT}/Contents/${courseId}`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+
 export const getCourseById = async (courseId: string,): Promise<any> => {
   const response = await axiosInstance.get(`${TEACHER_ENDPOINT}/getCourseByIdTeacher/${courseId}`);
   return response;
@@ -47,7 +56,7 @@ interface Course {
 
 
 // Fetch all courses
-export const getTeacherCourses = async (): Promise<AxiosResponse<Course[]>> => {
+export const getTeacherCourses = async (): Promise<Course[]> => {
   const response = await axiosInstance.get<Course[]>(`${TEACHER_ENDPOINT}/getCoursesbyTeacher`);
-  return response;
+  return response.data;
 };

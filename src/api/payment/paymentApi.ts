@@ -21,13 +21,14 @@ export const handlePayment = async (courseId: string): Promise<PaymentResponse> 
 };
 
 
-export const verifyPayment = async (response: any): Promise<any> => {
+export const verifyPayment = async (response: any, courseId: string): Promise<any> => {
     try {
         const verifyUrl = `${PROFILE_ENDPOINT}/payment/verify`;
         const data  = await axiosInstance.post<any>(verifyUrl, {
             orderId: response.razorpay_order_id,
             paymentId: response.razorpay_payment_id,
             signature: response.razorpay_signature,
+            courseId
         });
         return data
     } catch (error) {

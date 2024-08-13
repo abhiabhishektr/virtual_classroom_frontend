@@ -6,6 +6,7 @@ import AdminLogin from '../components/Auth/AdminLogin';
 import { AdminIsLoggedIn } from '../components/Auth/AdminProtectedRoute';
 import AdminNavbar from '../components/Admin/AdminNavbar'; // Adjusted import path
 import AdminTeacherRequests from '../components/Admin/AdminTeacherRequests';
+import CourseOversight from '../pages/Admin/CourseOversight';
 
 const AdminRoutes: React.FC = () => {
     const location = useLocation();
@@ -23,7 +24,7 @@ const AdminRoutes: React.FC = () => {
                     <Route path="/" element={<AdminDashboard />} />
                     <Route path="/users" element={<AdminUsers />} />
                     <Route path="/users-requests" element={< AdminTeacherRequests/>} />
-                    <Route path="/course-oversight" element={< AdminTeacherRequests/>} />
+                    <Route path="/course-oversight" element={< CourseOversight/>} />
                 </Route>
             </Routes>
         </div>
