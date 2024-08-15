@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { updateProfile } from '../../api/profileApi';
-import { setProfileData, setLoading, setError } from '../../redux/slices/user/profileSlice';
+import { setProfileData, setLoading, setError } from '../../redux/slices/profileSlice';
 import { showToast } from '../../utils/toast';
 import ImageCropper from "../../libraries/ImageCropper";
 import uploadImage from "../../libraries/uploadImage";

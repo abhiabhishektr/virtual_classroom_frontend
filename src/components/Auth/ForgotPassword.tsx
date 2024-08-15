@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import img from '../../assets/images/img';
 import { forgotPassword, forgotPasswordOTP } from '../../api/authApi';
 
-import { setLoading } from '../../redux/slices/user/profileSlice';
+import { setLoading } from '../../redux/slices/profileSlice';
 import { useDispatch } from 'react-redux';
 import { showToast } from '../../utils/toast';
 

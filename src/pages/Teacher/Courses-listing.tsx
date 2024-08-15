@@ -6,7 +6,7 @@ import Pagination from '../../components/Shared/Pagination';
 import { getUserCourses } from '../../api/userCourseApi'; // Import your API function
 import { courseListingDTO as Course } from '../../types/courseListingDTO';
 import { useDispatch } from 'react-redux';
-import { setLoading } from '../../redux/slices/user/profileSlice';
+import { setLoading } from '../../redux/slices/profileSlice';
 
 const CourseListing: React.FC = () => {
   const dispatch = useDispatch();

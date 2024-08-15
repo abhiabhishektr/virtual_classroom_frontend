@@ -5,7 +5,7 @@ import CourseRegistrationForm from '../../components/Profile/CourseRegistrationF
 import { CourseData } from '../../types/CourseTypes'; // Assuming you've moved the interfaces to a separate file
 import { addCourse } from '../../api/teacher/courseApi'; // Import the addCourse API function
 import { useDispatch } from 'react-redux';
-import { setLoading } from '../../redux/slices/user/profileSlice';
+import { setLoading } from '../../redux/slices/profileSlice';
 import { showToast } from '../../utils/toast';
 
 

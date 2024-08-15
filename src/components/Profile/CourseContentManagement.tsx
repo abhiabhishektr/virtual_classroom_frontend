@@ -1,26 +1,19 @@
-// src/components/Profile/CourseContentManagement.tsx
 import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { v4 as uuidv4 } from 'uuid';
 import { FaEdit, FaTrash, FaPlus, FaVideo, FaFile, FaPlayCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
-import { IChapter, IContent } from '../../types/contentTypes';
-import { deleteModule, updateModule, deleteContent } from '../../api/teacher/courseContentApi';
-
-
+import { IChapter, IContent, courseContentDetails } from '../../types/contentTypes';
+import { deleteModule, deleteContent ,uploadContent} from '../../api/teacher/courseContentApi';
 
 interface CourseContentManagementProps {
     chapters: IChapter[];
+    courseDetails: courseContentDetails;
 }
 
-
-const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapters: initialChapters }) => {
-    useEffect(() => {
-        setChapters(initialChapters);
-    }, [initialChapters]);
-
-    const url: string = window.location.href; // Current URL
-    const courseId : string | undefined = url.split('/').pop();
+const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapters: initialChapters, courseDetails }) => {
+    const courseId: string | undefined = courseDetails.courseId
+    const moduleId: string | undefined = courseDetails.ModuleId
 
     const [chapters, setChapters] = useState<IChapter[]>([]);
     const [activeChapter, setActiveChapter] = useState<string | null>(null);
@@ -29,10 +22,14 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
     const [editItem, setEditItem] = useState<any>(null);
     const [newTitle, setNewTitle] = useState<string>('');
 
-    const onDrop = useCallback((acceptedFiles: File[], chapterId: string) => {
-        acceptedFiles.forEach((file) => {
+    useEffect(() => {
+        setChapters(initialChapters);
+    }, [initialChapters]);
+
+    const onDrop = useCallback(async (acceptedFiles: File[], chapterId: string) => {
+        for (const file of acceptedFiles) {
             const reader = new FileReader();
-            reader.onload = () => {
+            reader.onload = async () => {
                 const url = URL.createObjectURL(file);
                 const newContent: IContent = {
                     _id: uuidv4(),
@@ -41,11 +38,11 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
                     url: url,
                     duration: file.type.startsWith('video') ? 0 : undefined,
                 };
-                addContent(chapterId, newContent);
+                await addContent(chapterId, newContent);
             };
             reader.readAsArrayBuffer(file);
-        });
-    }, []);
+        }
+    }, [courseId, moduleId]); // Add courseId and moduleId to the dependency array
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop: (acceptedFiles) => activeChapter && onDrop(acceptedFiles, activeChapter),
@@ -55,13 +52,31 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
         },
     });
 
-
-    const addContent = (chapterId: string, newContent: IContent) => {
-        setChapters(chapters.map(chapter =>
+const addContent = async (chapterId: string, newContent: IContent) => {
+        // Update local state
+        setChapters(prevChapters => prevChapters.map(chapter =>
             chapter._id === chapterId
                 ? { ...chapter, contents: [...chapter.contents, newContent] }
                 : chapter
         ));
+    
+        // Call API to upload content
+        try {
+            if (!courseId || !moduleId) {
+                throw new Error('Course ID or Module ID is missing');
+            }
+            await uploadContent(courseId, moduleId, chapterId, newContent);
+            console.log('Content uploaded successfully');
+        } catch (error) {
+            console.error('Failed to upload content:', error);
+            // Optionally, remove the content from local state if the upload fails
+            setChapters(prevChapters => prevChapters.map(chapter =>
+                chapter._id === chapterId
+                    ? { ...chapter, contents: chapter.contents.filter(content => content._id !== newContent._id) }
+                    : chapter
+            ));
+            // You might also want to show an error message to the user here
+        }
     };
 
     const addChapter = () => {
@@ -70,7 +85,7 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
             title: `New Chapter`,
             contents: [],
         };
-        setChapters([...chapters, newChapter]);
+        setChapters(prevChapters => [...prevChapters, newChapter]);
         setEditMode('chapter');
         setEditItem(newChapter);
         setNewTitle(newChapter.title);
@@ -79,11 +94,11 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
     const handleEdit = (e: React.FormEvent) => {
         e.preventDefault();
         if (editMode === 'chapter') {
-            setChapters(chapters.map((chapter) =>
+            setChapters(prevChapters => prevChapters.map((chapter) =>
                 chapter._id === editItem._id ? { ...chapter, title: newTitle } : chapter
             ));
         } else if (editMode === 'content') {
-            setChapters(chapters.map((chapter) =>
+            setChapters(prevChapters => prevChapters.map((chapter) =>
                 chapter._id === activeChapter
                     ? {
                         ...chapter,
@@ -106,33 +121,24 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
         }
 
         if (contentId) {
-            // Find the chapter to get its title
             const chapter = chapters.find(c => c._id === chapterId);
-            const contentTitle = chapter?.contents.find(c => c._id === contentId)?.title || "Unknown Content";
-
-            // Show alert with chapter and content information
             console.log(`Deleting content with ID: ${contentId} from chapter with ID: ${chapterId} (${chapter?.title || "Unknown Chapter"})`);
 
-            deleteContent(chapterId, contentId, courseId);
-            // Perform the deletion
-            setChapters(chapters.map((chapter) =>
+            deleteContent(chapterId, contentId, courseId, moduleId);
+           
+            setChapters(prevChapters => prevChapters.map((chapter) =>
                 chapter._id === chapterId
                     ? { ...chapter, contents: chapter.contents.filter((content) => content._id !== contentId) }
                     : chapter
             ));
         } else {
-            // Find the chapter to get its title
             const chapter = chapters.find(c => c._id === chapterId);
-
-            // Show alert with chapter information
-            deleteModule(chapterId);
+            deleteModule(moduleId, courseId, chapterId);
             console.log(`Deleting chapter with ID: ${chapterId} (${chapter?.title || "Unknown Chapter"})`);
 
-            // Perform the deletion
-            setChapters(chapters.filter((chapter) => chapter._id !== chapterId));
+            setChapters(prevChapters => prevChapters.filter((chapter) => chapter._id !== chapterId));
         }
     };
-
 
     return (
         <div className="flex h-screen bg-gray-100 font-sans">

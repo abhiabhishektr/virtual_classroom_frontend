@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { updatePassword } from '../../api/profileApi';
 import { showToast } from '../../utils/toast';
-import { setLoading, setError } from '../../redux/slices/user/profileSlice';
+import { setLoading, setError } from '../../redux/slices/profileSlice';
 
 interface ChangePasswordPopupProps {
   visible: boolean;

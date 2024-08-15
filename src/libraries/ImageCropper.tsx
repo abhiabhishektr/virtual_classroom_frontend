@@ -3,7 +3,7 @@ import Cropper from 'react-easy-crop';
 import styled from 'styled-components';
 
 import { useDispatch } from 'react-redux';
-import { setLoading } from '../redux/slices/user/profileSlice';
+import { setLoading } from '../redux/slices/profileSlice';
 import { showToast } from '../utils/toast';
 
 interface Area {

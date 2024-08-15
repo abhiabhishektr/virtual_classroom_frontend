@@ -9,7 +9,7 @@ import GoogleShadowDom from '../../shadow/google';
 
 
 import { useDispatch } from 'react-redux';
-import { setLoading } from '../../redux/slices/user/profileSlice';
+import { setLoading } from '../../redux/slices/profileSlice';
 import { showToast } from '../../utils/toast';
 
 

@@ -4,7 +4,7 @@ import CourseRegistrationForm from '../../components/Profile/CourseRegistrationF
 import { CourseData, CourseSubmissionData } from '../../types/CourseTypes';
 import { editCourse, getCourseById } from '../../api/teacher/courseApi';
 import { useDispatch } from 'react-redux';
-import { setLoading } from '../../redux/slices/user/profileSlice';
+import { setLoading } from '../../redux/slices/profileSlice';
 import { showToast } from '../../utils/toast';
 
 const CourseEdit: React.FC = () => {

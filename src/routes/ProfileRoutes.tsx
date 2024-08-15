@@ -7,7 +7,7 @@ import Sidebar from '../components/Profile/Sidebar';
 import PersonalDetails from '../components/Profile/PersonalDetails';
 import ProfileOverview from '../components/Profile/ProfileOverview';
 import { getProfile } from "../api/profileApi";
-import { setProfileData, setLoading, setError } from '../redux/slices/user/profileSlice';
+import { setProfileData, setLoading, setError } from '../redux/slices/profileSlice';
 import { RootState } from '../redux/store';
 import Loader from "../components/Shared/Loader";
 import RegisterAsTeacher from '../components/Profile/TeacherRegistration';
