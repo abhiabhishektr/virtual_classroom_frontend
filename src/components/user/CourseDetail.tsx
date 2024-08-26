@@ -1,3 +1,4 @@
+// src/components/user/CourseDetail.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ICourse } from '../../types/CourseTypes';
@@ -5,18 +6,43 @@ import { getUserCourseById } from '../../api/userCourseApi';
 import { motion } from 'framer-motion';
 import { constants } from '../../utils/constants'; // Ensure constants are imported correctly
 import PaymentComponent from '../Payment/PaymentComponent';
+import useIntersectionObserver from '../../hooks/useIntersectionObserver';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../ui/accordion';
+
+import RatingAndReview from './RatingAndReview';
+
 
 const CourseDetail: React.FC = () => {
+    const [isInView, setIsInView] = useState(false);
     const { courseId } = useParams<{ courseId: string }>();
     const [course, setCourse] = useState<ICourse | null>(null);
+    console.log("course: ", course);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState<boolean>(false);
+
+    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+    console.log("selectedVideo: ", selectedVideo);
+
+    const handleVideoClick = (url: string) => {
+        if (url) {
+            setSelectedVideo(url);
+            console.log(`Selected video URL: ${url}`);
+        }
+    };
+
+    const handleIntersection = () => {
+        setIsInView(true); // Set to true when the component is in view
+    };
+
+    const ref = useIntersectionObserver(handleIntersection);
 
     useEffect(() => {
         const fetchCourse = async () => {
             try {
                 const fetchedCourse = await getUserCourseById(courseId ?? '');
+                console.log("fetchedCourse: ", fetchedCourse);
+                // setCourse(fetchedCourse);
                 setCourse(fetchedCourse);
             } catch (err) {
                 setError('Failed to fetch course details. Please try again later.');
@@ -39,6 +65,7 @@ const CourseDetail: React.FC = () => {
     if (!course) {
         return <div className="text-center py-6">No course found.</div>;
     }
+
 
     return (
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -72,13 +99,22 @@ const CourseDetail: React.FC = () => {
                         {/* Course Image */}
                         <div className="mb-8 rounded-lg overflow-hidden shadow-lg">
                             <div className="relative pb-[56.25%]">
-                                <img
-                                    src={course.imageUrl || constants.defaultAvatarUrl}
-                                    alt={course.title}
-                                    className="absolute inset-0 w-full h-full object-cover"
-                                />
+                                {selectedVideo ? (
+                                    <video
+                                        src={selectedVideo}
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                        controls
+                                    />
+                                ) : (
+                                    <img
+                                        src={course.imageUrl || constants.defaultAvatarUrl}
+                                        alt={course.title}
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                    />
+                                )}
                             </div>
                         </div>
+
 
                         {/* Course Details */}
                         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -149,8 +185,7 @@ const CourseDetail: React.FC = () => {
                             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Instructor</h2>
                             <div className="flex items-center mb-4">
                                 <img
-                                    // src={constants.defaultAvatarUrl || 'https://picsum.photos/160'}
-                                    src='https://picsum.photos/160'
+                                    src={course.instructorProfilePicture || 'https://picsum.photos/160'}
                                     alt={course.instructorName}
                                     className="w-16 h-16 rounded-full mr-4 object-cover"
                                 />
@@ -160,6 +195,13 @@ const CourseDetail: React.FC = () => {
                                 </div>
                             </div>
                             <p className="text-gray-700">{constants.instructorBio}</p>
+                        </div>
+
+
+
+                        <div ref={ref}>
+
+                            {isInView && course.isPurchased && <RatingAndReview />}
                         </div>
 
                     </motion.div>
@@ -175,9 +217,9 @@ const CourseDetail: React.FC = () => {
                         {!course.isPurchased && (
                             <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 sticky top-20">
                                 <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                                    ${course.fees ? course.fees.toFixed(2) : 'Price not available'}
+                                    ₹{course.fees ? course.fees.toFixed(2) : 'Price not available'}
                                 </h2>
-                                <PaymentComponent courseId={course._id} />
+                                <PaymentComponent courseId={course._id} instructorEmail={course.instructorEmail}/>
 
                                 <ul className="text-gray-600 space-y-2">
                                     {[
@@ -198,19 +240,41 @@ const CourseDetail: React.FC = () => {
                         {/* Course Content */}
                         <div className="bg-white rounded-lg shadow-md p-6 mt-8">
                             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Course Content</h2>
-                            <div className="space-y-4">
-                                {constants.placeholderSections.map((section, index) => (
-                                    <div key={index} className="bg-gray-50 rounded-lg shadow p-4">
-                                        <h3 className="text-lg font-semibold text-gray-900">{section.title}</h3>
-                                        <ul className="list-disc list-inside text-gray-700 mt-2">
-                                            {section.items.map((item, idx) => (
-                                                <li key={idx}>{item}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
+                            <Accordion type="single" collapsible>
+                                {course.modules && course.modules.map((module, index) => (
+                                    <AccordionItem key={index} value={`module-${index}`}>
+                                        <AccordionTrigger className="text-lg font-medium text-gray-800 mb-2">
+                                            {module.title}
+                                        </AccordionTrigger>
+                                        <AccordionContent>
+                                            <ul className="space-y-2">
+                                                {module.contents.map((content, contentIndex) => (
+                                                    <li
+                                                        key={contentIndex}
+                                                        className="flex items-center justify-between space-x-2"
+                                                    >
+                                                        <span
+                                                            onClick={() => handleVideoClick(content.url)}
+                                                            className={`text-black hover:text-blue-400  ${!content.url ? "text-gray-500 cursor-not-allowed" : "cursor-pointer"}`}
+                                                            title={!content.url ? "Unlock by Purchase" : ""}
+                                                        >
+                                                            {content.title}
+                                                        </span>
+                                                        <input
+                                                            type="checkbox"
+                                                            className="form-checkbox h-4 w-4 text-blue-600"
+                                                            title="Mark as completed"
+                                                            disabled={!content.url}
+                                                        />
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </AccordionContent>
+                                    </AccordionItem>
                                 ))}
-                            </div>
+                            </Accordion>
                         </div>
+
                     </motion.div>
                 </div>
             </div>

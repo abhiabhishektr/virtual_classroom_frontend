@@ -29,11 +29,45 @@ export interface ICourse extends Document {
   fees: number;
   instructorName: string;
   instructorEmail: string;
+  instructorProfilePicture?: string;
   category: string;
   imageUrl: string;
   creatorName: string;
   creatorEmail: string;
   isPurchased: boolean; // Add this field
+  rating?: number;
+  reviews?: IReview[];
+  modules?: IModule[];  
 }
 
-// constants.ts
+interface IModule {
+    title: string;
+    contents: IContent[];
+}
+
+interface IContent {
+  type: 'video' | 'document';
+  title: string;
+  url: string;
+  duration?: number; // Duration in seconds, optional for documents
+}
+export interface IReview {
+  _id: string;
+  courseId: string;
+  rating: number;
+  comment: string;
+  date: Date;
+  userName: string;
+}
+
+
+// export interface IReview {
+//   _id: string;
+//   courseId: string;
+//   userId: string;
+//   userName: string; // The name of the user who left the review
+//   rating: number;   // Rating given by the user
+//   comment: string;  // Comment provided by the user
+//   createdAt: Date;  // Timestamp of when the review was created
+//   updatedAt: Date;  // Timestamp of when the review was last updated
+// }

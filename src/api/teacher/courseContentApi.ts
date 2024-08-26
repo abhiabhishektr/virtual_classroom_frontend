@@ -3,23 +3,17 @@
 import axiosInstance from '../axiosInstance';
 
 import { TEACHER_ENDPOINT } from '../../utils/constants';
-import { ApiIContent, IContent } from '../../types/contentTypes';
+import { ApiIContent, IChapter, IContent } from '../../types/contentTypes';
 
 // Function to add a new module to a course
-export const addModule = async (data: object): Promise<any> => {
-    const response = await axiosInstance.post(`${TEACHER_ENDPOINT}/modules`, data, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+export const addModule = async (courseId: string,title: string): Promise<IChapter[]> => {
+    const response = await axiosInstance.post(`${TEACHER_ENDPOINT}/modules`, { courseId ,title})
     return response.data;
 };
 
 // Function to get all modules for a specific course
 export const getModulesByCourseId = async (courseId: string): Promise<ApiIContent> => {
     const response = await axiosInstance.get(`${TEACHER_ENDPOINT}/modules/course/${courseId}`);
-    console.log("response.data", response.data);
-
     return response.data;
 };
 
@@ -42,7 +36,7 @@ export const updateModule = async (moduleId: string, data: object): Promise<any>
 // Function to delete a module by ID
 export const deleteModule = async (moduleId: string, courseId: string, chapterId: string): Promise<any> => {
     console.log(`courseId: ${courseId}, moduleId: ${moduleId}, chapterId: ${chapterId}`);
-    
+
     const response = await axiosInstance.delete(`${TEACHER_ENDPOINT}/modules/${chapterId}`, {
         data: { moduleId, courseId },
     });
@@ -52,7 +46,7 @@ export const deleteModule = async (moduleId: string, courseId: string, chapterId
 // Function to delete a module by ID
 export const renameModule = async (moduleId: string, courseId: string, chapterId: string): Promise<any> => {
     console.log(`courseId: ${courseId}, moduleId: ${moduleId}, chapterId: ${chapterId}`);
-    
+
     const response = await axiosInstance.put(`${TEACHER_ENDPOINT}/modules/${chapterId}`, {
         data: { moduleId, courseId },
     });
@@ -89,7 +83,7 @@ export const uploadContent = async (courseId: string, moduleId: string, chapterI
             console.log(`FormData Key: ${key}, Value:`, value);
         });
 
-        const response = await axiosInstance.post(`${TEACHER_ENDPOINT}/content/${courseId}/modules/${moduleId}/chapters/${chapterId}/contents`, formData, {
+        const response = await axiosInstance.post(`${TEACHER_ENDPOINT}/content/${courseId}/modules/${chapterId}/contents`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

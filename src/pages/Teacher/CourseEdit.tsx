@@ -66,7 +66,6 @@ const CourseEdit: React.FC = () => {
 
   return (
     <div>
-      <h1 className="text-3xl mb-6">Edit Course</h1>
       <CourseRegistrationForm 
         mode="edit" 
         course={course} 

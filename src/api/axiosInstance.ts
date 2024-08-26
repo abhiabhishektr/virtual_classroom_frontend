@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
 });
 
 axiosRetry(axiosInstance, {
-  retries: 1,
+  retries: 0,
   retryCondition: (error) => !error.response || error.response.status >= 500,
 });
 
@@ -24,7 +24,7 @@ const refreshToken = async () => {
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken');
-    if (token) {
+    if (token && token.length > 5) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;

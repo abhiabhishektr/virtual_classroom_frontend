@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { showToast } from '../../utils/toast';
 import { registerAsTeacher, getTeacherRequestStatus } from '../../api/profileApi'; // Adjust the path as needed
+import { Input } from '../ui/input';
 
 const RequestTeacherStatus: React.FC = () => {
   const [requestData, setRequestData] = useState<any>(null);
@@ -79,7 +80,7 @@ const RequestTeacherStatus: React.FC = () => {
             <label htmlFor="qualification" className="block text-sm font-medium text-gray-700">
               Highest Qualification
             </label>
-            <input
+            <Input
               id="qualification"
               type="text"
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
@@ -92,7 +93,7 @@ const RequestTeacherStatus: React.FC = () => {
             <label htmlFor="experience" className="block text-sm font-medium text-gray-700">
               Years of Teaching Experience
             </label>
-            <input
+            <Input
               id="experience"
               type="number"
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
@@ -105,7 +106,7 @@ const RequestTeacherStatus: React.FC = () => {
             <label htmlFor="subjectsToTeach" className="block text-sm font-medium text-gray-700">
               Subjects You Want to Teach (comma-separated)
             </label>
-            <input
+            <Input
               id="subjectsToTeach"
               type="text"
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
@@ -140,7 +141,7 @@ const RequestTeacherStatus: React.FC = () => {
             <label htmlFor="qualification" className="block text-sm font-medium text-gray-700">
               Highest Qualification
             </label>
-            <input
+            <Input
               id="qualification"
               name="qualification"
               type="text"
@@ -158,7 +159,7 @@ const RequestTeacherStatus: React.FC = () => {
             <label htmlFor="experience" className="block text-sm font-medium text-gray-700">
               Years of Teaching Experience
             </label>
-            <input
+            <Input
               id="experience"
               name="experience"
               type="number"
@@ -176,7 +177,7 @@ const RequestTeacherStatus: React.FC = () => {
             <label htmlFor="subjectsToTeach" className="block text-sm font-medium text-gray-700">
               Subjects You Want to Teach (comma-separated)
             </label>
-            <input
+            <Input
               id="subjectsToTeach"
               name="subjectsToTeach"
               type="text"

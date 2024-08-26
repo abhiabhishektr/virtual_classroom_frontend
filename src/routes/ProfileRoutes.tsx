@@ -17,6 +17,8 @@ import CourseEdit from '../pages/Teacher/CourseEdit';
 import TeacherProtectedRoute from './ProtectedRoute/TeacherProtectedRoute';
 import CoursePurchaseHistory from '../pages/Users/CoursePurchaseHistory';
 import CourseContents from '../pages/Teacher/CourseContentView';
+import Notifications from '../pages/Users/Notifications';
+import { FiMenu } from 'react-icons/fi';
 
 
 const ProfilePage: React.FC = () => {
@@ -51,14 +53,20 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-full ">
+      <div className='block md:hidden fixed '>
+      <FiMenu/>
+      </div>
+      <div className='w-72 hidden md:block '>
       <Sidebar />
-      <main className="flex-1 p-8">
+      </div>
+      <main className="flex-1">
         <Routes>
           <Route path="/" element={<ProfileOverview />} />
           <Route path="/edit-profile" element={<PersonalDetails />} />
           <Route path="/teacher-registration" element={<RegisterAsTeacher />} />
           <Route path="/purchase-history" element={< CoursePurchaseHistory />} />
+          <Route path="/notifications" element={< Notifications />} />
 
           <Route element={<TeacherProtectedRoute requiredRole="teacher" />}>
             <Route path="/course-list" element={<CourseList />} />

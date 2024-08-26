@@ -9,8 +9,8 @@ const ProfileOverview: React.FC = () => {
   const initials = name ? name.split(' ').map(n => n[0]).join('') : 'AT';
 
   return (
-    <section className="py-10 bg-gray-100 sm:py-16 lg:py-24">
-      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <section className="py-10 bg-gray-100 sm:py-16 lg:py-0 ">
+      <div className="px-4 mx-auto max-w-full sm:px-6 lg:px-8 flex justify-center items-center h-[87vh]">
         <div className="text-center">
           {profilePicture ? (
             <img

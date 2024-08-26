@@ -1,20 +1,44 @@
 import React, { useState } from 'react';
 import { handlePayment, verifyPayment } from '../../api/payment/paymentApi';
 import { showToast } from '../../utils/toast';
+import Swal from 'sweetalert2';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface PaymentComponentProps {
     courseId: string;
+    instructorEmail: string;
 }
 
-const PaymentComponent: React.FC<PaymentComponentProps> = ({ courseId }) => {
+const PaymentComponent: React.FC<PaymentComponentProps> = ({ courseId ,instructorEmail}) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
+
+    const { email} = useSelector((state: RootState) => state.profile);
 
     const loadRazorpayScript = async () => {
         setLoading(true);
         setError(null);
         setPaymentStatus(null);
+
+        if (email === instructorEmail) {
+            // Show SweetAlert
+            const result = await Swal.fire({
+                title: 'Confirmation',
+                text: 'This course was created by you. Do you still want to purchase it?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, proceed',
+                cancelButtonText: 'No, cancel'
+            });
+
+            if (!result.isConfirmed) {
+                setLoading(false);
+                return; // Abort payment
+            }
+        }
+
 
         try {
             const data = await handlePayment(courseId);

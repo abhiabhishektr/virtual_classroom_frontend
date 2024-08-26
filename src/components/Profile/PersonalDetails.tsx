@@ -8,6 +8,7 @@ import ImageCropper from "../../libraries/ImageCropper";
 import uploadImage from "../../libraries/uploadImage";
 import axios from 'axios';
 import ChangePasswordPopup from './ChangePasswordPopup';
+import { Input } from '../ui/input';
 
 const PersonalDetails: React.FC = () => {
   const dispatch = useDispatch();
@@ -147,7 +148,7 @@ const PersonalDetails: React.FC = () => {
               />
               {hovered && (
                 <label className="absolute top-0 left-0 w-full h-full flex items-center justify-center cursor-pointer bg-black bg-opacity-50">
-                  <input
+                  <Input
                     type="file"
                     accept="image/*"
                     className="hidden"
@@ -165,7 +166,7 @@ const PersonalDetails: React.FC = () => {
             >
               {hovered ? (
                 <label className="cursor-pointer">
-                  <input
+                  <Input
                     type="file"
                     accept="image/*"
                     className="hidden"
@@ -192,7 +193,7 @@ const PersonalDetails: React.FC = () => {
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">Name</label>
         {isEditing ? (
-          <input
+          <Input
             type="text"
             name="name"
             value={editedName}
@@ -210,7 +211,7 @@ const PersonalDetails: React.FC = () => {
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">Phone</label>
         {isEditing ? (
-          <input
+          <Input
             type="text"
             name="phone"
             value={editedPhone}

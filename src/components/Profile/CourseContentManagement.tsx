@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { v4 as uuidv4 } from 'uuid';
-import { FaEdit, FaTrash, FaPlus, FaVideo, FaFile, FaPlayCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaVideo, FaFile, FaPlayCircle, FaChevronRight, FaChevronDown, FaTimes } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IChapter, IContent, courseContentDetails } from '../../types/contentTypes';
-import { deleteModule, deleteContent ,uploadContent} from '../../api/teacher/courseContentApi';
+import { deleteModule, deleteContent, uploadContent, addModule } from '../../api/teacher/courseContentApi';
 
 interface CourseContentManagementProps {
     chapters: IChapter[];
@@ -16,6 +16,8 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
     const moduleId: string | undefined = courseDetails.ModuleId
 
     const [chapters, setChapters] = useState<IChapter[]>([]);
+    const [tempChapter, setTempChapter] = useState<IChapter | null>(null);
+
     const [activeChapter, setActiveChapter] = useState<string | null>(null);
     const [activeContent, setActiveContent] = useState<IContent | null>(null);
     const [editMode, setEditMode] = useState<'chapter' | 'content' | null>(null);
@@ -23,7 +25,7 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
     const [newTitle, setNewTitle] = useState<string>('');
 
     useEffect(() => {
-        setChapters(initialChapters);
+        setChapters(initialChapters ?? []);
     }, [initialChapters]);
 
     const onDrop = useCallback(async (acceptedFiles: File[], chapterId: string) => {
@@ -52,14 +54,14 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
         },
     });
 
-const addContent = async (chapterId: string, newContent: IContent) => {
+    const addContent = async (chapterId: string, newContent: IContent) => {
         // Update local state
         setChapters(prevChapters => prevChapters.map(chapter =>
             chapter._id === chapterId
                 ? { ...chapter, contents: [...chapter.contents, newContent] }
                 : chapter
         ));
-    
+
         // Call API to upload content
         try {
             if (!courseId || !moduleId) {
@@ -85,18 +87,41 @@ const addContent = async (chapterId: string, newContent: IContent) => {
             title: `New Chapter`,
             contents: [],
         };
-        setChapters(prevChapters => [...prevChapters, newChapter]);
+        setTempChapter(newChapter);
         setEditMode('chapter');
         setEditItem(newChapter);
         setNewTitle(newChapter.title);
     };
 
+    const handleSave = async () => {
+        if (tempChapter) {
+            // Update local state
+            setChapters(prevChapters => [...prevChapters, tempChapter]);
+            const newModules = await addModule(courseId, newTitle);
+            console.log("newModules: ", newModules);
+            setChapters(newModules)
+            // Optionally, call the API to save the chapter to the database
+            // await addChapterApi(tempChapter);
+
+            // Clear temporary chapter state
+            setTempChapter(null);
+        }
+        setEditMode(null);
+        setEditItem(null);
+        setNewTitle('');
+    };
+
+
     const handleEdit = (e: React.FormEvent) => {
         e.preventDefault();
         if (editMode === 'chapter') {
-            setChapters(prevChapters => prevChapters.map((chapter) =>
-                chapter._id === editItem._id ? { ...chapter, title: newTitle } : chapter
-            ));
+            if (!tempChapter) {
+                setChapters(prevChapters => prevChapters.map((chapter) =>
+                    chapter._id === editItem._id ? { ...chapter, title: newTitle } : chapter
+                ));
+            }
+
+
         } else if (editMode === 'content') {
             setChapters(prevChapters => prevChapters.map((chapter) =>
                 chapter._id === activeChapter
@@ -125,7 +150,7 @@ const addContent = async (chapterId: string, newContent: IContent) => {
             console.log(`Deleting content with ID: ${contentId} from chapter with ID: ${chapterId} (${chapter?.title || "Unknown Chapter"})`);
 
             deleteContent(chapterId, contentId, courseId, moduleId);
-           
+
             setChapters(prevChapters => prevChapters.map((chapter) =>
                 chapter._id === chapterId
                     ? { ...chapter, contents: chapter.contents.filter((content) => content._id !== contentId) }
@@ -282,13 +307,15 @@ const addContent = async (chapterId: string, newContent: IContent) => {
                                     setEditMode(null);
                                     setEditItem(null);
                                     setNewTitle('');
+                                    setTempChapter(null); // Clear temp state if canceling
                                 }}
                                 className="px-4 py-2 bg-gray-300 rounded-full hover:bg-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
                             >
                                 Cancel
                             </button>
                             <button
-                                type="submit"
+                                type="button"
+                                onClick={handleSave}
                                 className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                             >
                                 Save
@@ -297,13 +324,20 @@ const addContent = async (chapterId: string, newContent: IContent) => {
                     </motion.form>
                 )}
 
-                {activeContent && (
+
+                {!editMode && activeContent && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="bg-white shadow-lg rounded-lg p-6 mt-6"
+                        className="relative bg-white shadow-lg rounded-lg p-6 mt-6"
                     >
+                        <button
+                            onClick={() => setActiveContent(null)}
+                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                        >
+                            <FaTimes className="text-2xl" />
+                        </button>
                         <h2 className="text-2xl font-semibold mb-4 text-gray-800">{activeContent.title}</h2>
                         {activeContent.type === 'video' ? (
                             <video
@@ -324,6 +358,7 @@ const addContent = async (chapterId: string, newContent: IContent) => {
                         )}
                     </motion.div>
                 )}
+
             </main>
         </div>
     );

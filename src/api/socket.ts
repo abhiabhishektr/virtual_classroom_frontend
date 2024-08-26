@@ -16,3 +16,19 @@ socket.on('disconnect', () => {
 });
 
 export default socket;
+
+
+// src/
+// ├── components/
+// │   ├── ChatInterface.tsx
+// │   ├── SocketInitializer.tsx
+// ├── context/
+// │   └── SocketContext.tsx
+// ├── hooks/
+// │   └── useAuth.ts
+// ├── redux/
+// │   ├── slices/
+// │   │   └── socketSlice.ts
+// │   └── store.ts
+// ├── App.tsx
+// └── index.tsx

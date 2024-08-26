@@ -38,7 +38,7 @@ const CourseContent: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">{courseDetails.title}</h1>
-      <CourseContentManagement chapters={chapters} courseDetails={courseDetails}/>
+      <CourseContentManagement chapters={chapters} courseDetails={(courseDetails ?? {})}/>
     </div>
   );
 };

@@ -44,10 +44,13 @@ export const profileSlice = createSlice({
     setIsEditing(state, action: PayloadAction<boolean>) {
       state.isEditing = action.payload;
     },
+    resetProfileState() {
+      return initialState;
+    }
   },
 });
 
-export const { setProfileData, setLoading, setError, setIsEditing } = profileSlice.actions;
+export const { setProfileData, setLoading, setError, setIsEditing ,resetProfileState} = profileSlice.actions;
 
 export default profileSlice.reducer;
 

@@ -1,21 +1,21 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-// import AppTesting from './Testing/AppTesting.tsx'// for testing only 
-import './main.css'
-import './index.css'
+// src/index.tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.tsx';
+import './main.css';
+import './index.css';
 
-
-import  {store} from './redux/store';
+import { store } from './redux/store';
 import { Provider } from 'react-redux';
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
-  <App />
-  </Provider> 
-)
-// // <React.StrictMode>
-// /* </React.StrictMode>, */
-// /* <AppTesting /> */
+    <App />
+  </Provider>
+);
+
+
+
 
 
