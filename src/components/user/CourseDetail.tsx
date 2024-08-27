@@ -20,23 +20,20 @@ const CourseDetail: React.FC = () => {
     const [isInView, setIsInView] = useState(false);
     const { courseId } = useParams<{ courseId: string }>();
     const [course, setCourse] = useState<ICourse | null>(null);
-    console.log("course: ", course);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState<boolean>(false);
 
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-    console.log("selectedVideo: ", selectedVideo);
 
     const handleVideoClick = (url: string) => {
         if (url) {
             setSelectedVideo(url);
-            console.log(`Selected video URL: ${url}`);
         }
     };
 
     const handleIntersection = () => {
-        setIsInView(true); // Set to true when the component is in view
+        setIsInView(true);
     };
 
     const ref = useIntersectionObserver(handleIntersection);
@@ -45,7 +42,6 @@ const CourseDetail: React.FC = () => {
         const fetchCourse = async () => {
             try {
                 const fetchedCourse = await getUserCourseById(courseId ?? '');
-                console.log("fetchedCourse: ", fetchedCourse);
                 // setCourse(fetchedCourse);
                 setCourse(fetchedCourse);
             } catch (err) {
@@ -62,7 +58,6 @@ const CourseDetail: React.FC = () => {
 
     const handleStarToggle = async (moduleIndex: number, contentIndex: number) => {
         if (!course || !course.modules || !courseId) return;
-        console.log("courseId: ", courseId);
 
         const content = course.modules[moduleIndex].contents[contentIndex];
         const isImportant = content.isImportant;
@@ -278,8 +273,7 @@ const CourseDetail: React.FC = () => {
 
 
                         <div ref={ref}>
-
-                            {isInView && course.isPurchased && <RatingAndReview />}
+                            {isInView && <RatingAndReview  isPurchased={course.isPurchased } />}
                         </div>
 
                     </motion.div>

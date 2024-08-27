@@ -1,4 +1,3 @@
-// src/components/user/RatingAndReview.tsx
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -8,10 +7,11 @@ import { useParams } from 'react-router-dom';
 
 const MySwal = withReactContent(Swal);
 
+interface RatingAndReviewProps {
+    isPurchased: boolean; // Add this prop to determine if the user purchased the course
+}
 
-
-
-const RatingAndReview: React.FC = () => {
+const RatingAndReview: React.FC<RatingAndReviewProps> = ({ isPurchased }) => {
     const [reviews, setReviews] = useState<IReview[]>([]);
     const { courseId } = useParams<{ courseId: string }>();
 
@@ -31,29 +31,34 @@ const RatingAndReview: React.FC = () => {
     };
 
     const handleRating = async () => {
+        if (!isPurchased) {
+            MySwal.fire('Error', 'You need to purchase the course to leave a rating.', 'error');
+            return;
+        }
+
         let selectedRating = 0;
 
         const { value: formValues } = await MySwal.fire({
             title: 'Rate and Review the Course',
             html: `
-            <div class="mb-4">
-                <label for="rating" class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
-                <div class="flex items-center justify-center mb-4" id="rating-container">
-                    ${[1, 2, 3, 4, 5].map(
+        <div class="mb-4">
+          <label for="rating" class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+          <div class="flex items-center justify-center mb-4" id="rating-container">
+            ${[1, 2, 3, 4, 5].map(
                 (star) => `
-                        <button
-                            type="button"
-                            class="text-2xl focus:outline-none text-gray-300"
-                            id="star-${star}"
-                            data-value="${star}"
-                        >
-                            ★
-                        </button>`
+                <button
+                  type="button"
+                  class="text-2xl focus:outline-none text-gray-300"
+                  id="star-${star}"
+                  data-value="${star}"
+                >
+                  ★
+                </button>`
             ).join('')}
-                </div>
-                <textarea id="review" class="swal2-textarea" placeholder="Write your review here..."></textarea>
-            </div>
-            `,
+          </div>
+          <textarea id="review" class="swal2-textarea" placeholder="Write your review here..."></textarea>
+        </div>
+      `,
             focusConfirm: false,
             didOpen: () => {
                 const ratingContainer = document.getElementById('rating-container');
@@ -97,30 +102,35 @@ const RatingAndReview: React.FC = () => {
         }
     };
 
-    const handleEditReview = async (review: IReview) => {
+    async (review: IReview) => {
+        if (!isPurchased) {
+            MySwal.fire('Error', 'You need to purchase the course to edit a review.', 'error');
+            return;
+        }
+
         let selectedRating = review.rating;
 
         const { value: formValues } = await MySwal.fire({
             title: 'Edit Your Review',
             html: `
-            <div class="mb-4">
-                <label for="rating" class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
-                <div class="flex items-center justify-center mb-4" id="rating-container">
-                    ${[1, 2, 3, 4, 5].map(
+        <div class="mb-4">
+          <label for="rating" class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+          <div class="flex items-center justify-center mb-4" id="rating-container">
+            ${[1, 2, 3, 4, 5].map(
                 (star) => `
-                        <button
-                            type="button"
-                            class="text-2xl focus:outline-none ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}"
-                            id="star-${star}"
-                            data-value="${star}"
-                        >
-                            ★
-                        </button>`
+                <button
+                  type="button"
+                  class="text-2xl focus:outline-none ${star <= review.rating ? 'text-yellow-400' : 'text-gray-300'}"
+                  id="star-${star}"
+                  data-value="${star}"
+                >
+                  ★
+                </button>`
             ).join('')}
-                </div>
-                <textarea id="review" class="swal2-textarea">${review.comment}</textarea>
-            </div>
-            `,
+          </div>
+          <textarea id="review" class="swal2-textarea">${review.comment}</textarea>
+        </div>
+      `,
             focusConfirm: false,
             didOpen: () => {
                 const ratingContainer = document.getElementById('rating-container');
@@ -167,12 +177,21 @@ const RatingAndReview: React.FC = () => {
     return (
         <div className="bg-white rounded-lg shadow-md p-6 mt-8 relative">
             <div className="absolute top-6 right-6">
-                <button
-                    className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onClick={handleRating}
-                >
-                    Rate the Course
-                </button>
+                {isPurchased ? (
+                    <button
+                        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onClick={handleRating}
+                    >
+                        Rate the Course
+                    </button>
+                ) : (
+                    <button
+                        className="bg-gray-300 text-gray-500 py-2 px-4 rounded-md cursor-not-allowed"
+                        onClick={handleRating}
+                    >
+                        Rate the Course
+                    </button>
+                )}
             </div>
 
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Reviews and Ratings</h2>
@@ -204,7 +223,6 @@ const RatingAndReview: React.FC = () => {
                     <p className="text-gray-600">No reviews yet. Be the first to rate this course!</p>
                 )}
             </div>
-
         </div>
     );
 };

@@ -59,12 +59,19 @@ export const deleteUserCourse = async (courseId: string): Promise<void> => {
 // Fetch all courses for a user
 
 
-export const getUserCourses = async (myLearnings: boolean = false): Promise<courseListingDTO[]> => {
-    if (myLearnings) {
+export const getUserCourses = async (showMyLearnings: boolean, searchTerm = '', sortOption = '', page = 1, limit = 8): Promise<any> => {
+    if (showMyLearnings) {
         const response = await axiosInstance.get<courseListingDTO[]>(`${PROFILE_ENDPOINT}/user-courses`);
         return response.data;
     }
-    const response = await axiosInstance.get<courseListingDTO[]>(`${PROFILE_ENDPOINT}/all-courses`);
+    const response = await axiosInstance.get<courseListingDTO[]>(`${PROFILE_ENDPOINT}/all-courses`, {
+        params: {
+          search: searchTerm,
+          sort: sortOption,
+          page,
+          limit
+        }
+      });
     return response.data;
 };
 

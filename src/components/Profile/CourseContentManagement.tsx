@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { IChapter, IContent, courseContentDetails } from '../../types/contentTypes';
 import { deleteModule, deleteContent, uploadContent, addModule, updateModule, renameContent } from '../../api/teacher/courseContentApi';
 import { showToast } from '../../utils/toast';
-
+import { useDispatch } from 'react-redux';
+import { setLoading } from '../../redux/slices/profileSlice';
 
 
 interface CourseContentManagementProps {
@@ -17,7 +18,7 @@ interface CourseContentManagementProps {
 const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapters: initialChapters, courseDetails }) => {
     const courseId: string | undefined = courseDetails.courseId
     const moduleId: string | undefined = courseDetails.ModuleId
-    console.log("moduleId: ", moduleId);
+    const dispatch = useDispatch();
 
     const [chapters, setChapters] = useState<IChapter[]>([]);
     const [tempChapter, setTempChapter] = useState<IChapter | null>(null);
@@ -68,11 +69,12 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
 
         // Call API to upload content
         try {
+            dispatch(setLoading(true));
             if (!courseId || !moduleId) {
                 throw new Error('Course ID or Module ID is missing');
             }
-            await uploadContent(courseId, moduleId, chapterId, newContent);
-            console.log('Content uploaded successfully');
+           const res = await uploadContent(courseId, moduleId, chapterId, newContent);
+           setChapters(res.modules)
         } catch (error) {
             console.error('Failed to upload content:', error);
             // Optionally, remove the content from local state if the upload fails
@@ -82,6 +84,8 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
                     : chapter
             ));
             // You might also want to show an error message to the user here
+        }finally{
+            dispatch(setLoading(false));
         }
     };
 
