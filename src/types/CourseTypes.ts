@@ -37,20 +37,25 @@ export interface ICourse extends Document {
   isPurchased: boolean; // Add this field
   rating?: number;
   reviews?: IReview[];
-  modules?: IModule[];  
+  modules?: IModule[];
 }
 
 interface IModule {
-    title: string;
-    contents: IContent[];
+  _id: string;
+  title: string;
+  contents: IContent[];
 }
 
 interface IContent {
+  _id: string;
   type: 'video' | 'document';
   title: string;
   url: string;
   duration?: number; // Duration in seconds, optional for documents
+  isCompleted?: boolean;
+  isImportant?: boolean;
 }
+
 export interface IReview {
   _id: string;
   courseId: string;

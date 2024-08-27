@@ -41,13 +41,12 @@ export const useAuth = () => {
   };
 
   const logout = () => {
-    localStorage.removeItem('reduxState');
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('refreshToken');
-    Cookies.remove('refreshToken');
+    localStorage.clear();
     dispatch(setAuthToken(null));  // Update Redux store
     dispatch(resetAuthState());   // Clear auth state
     dispatch(resetProfileState()); // Clear profile state
+    Cookies.remove('refreshToken');
+    localStorage.removeItem('reduxState')
     checkAuthTokens();
   };
 

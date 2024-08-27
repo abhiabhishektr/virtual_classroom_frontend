@@ -8,8 +8,12 @@ import { constants } from '../../utils/constants'; // Ensure constants are impor
 import PaymentComponent from '../Payment/PaymentComponent';
 import useIntersectionObserver from '../../hooks/useIntersectionObserver';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../ui/accordion';
+import { StarIcon as OutlineStarIcon } from '@heroicons/react/24/outline';
+import { StarIcon as SolidStarIcon } from '@heroicons/react/24/solid';
 
 import RatingAndReview from './RatingAndReview';
+import { markContentCompleted, markContentImportant, unmarkContentCompleted, unmarkContentImportant } from '../../api/user/userProgressApi';
+import { showToast } from '../../utils/toast';
 
 
 const CourseDetail: React.FC = () => {
@@ -53,6 +57,80 @@ const CourseDetail: React.FC = () => {
 
         fetchCourse();
     }, [courseId]);
+
+
+
+    const handleStarToggle = async (moduleIndex: number, contentIndex: number) => {
+        if (!course || !course.modules || !courseId) return;
+        console.log("courseId: ", courseId);
+
+        const content = course.modules[moduleIndex].contents[contentIndex];
+        const isImportant = content.isImportant;
+
+
+        try {
+            if (isImportant) {
+                // Unmark content as important
+                await unmarkContentImportant(courseId as string, content._id);
+            } else {
+                // Mark content as important
+                await markContentImportant(courseId as string, content._id);
+            }
+
+            // Update the state to reflect the change
+            const updatedCourse = { ...course };
+            if (updatedCourse.modules) {
+                // Ensure modules and contents are defined
+                if (updatedCourse.modules[moduleIndex]?.contents) {
+                    updatedCourse.modules[moduleIndex].contents[contentIndex].isImportant = !isImportant;
+                }
+            }
+            setCourse(updatedCourse);
+            showToast('Importance Marked', 'success', 'small-toast', 2000, 'bottom-left');
+        } catch (error) {
+            showToast('Failed to update content importance', 'error');
+            console.error('Error updating content importance', error);
+        }
+    };
+
+
+    const handleCheckboxToggle = async (moduleIndex: number, contentIndex: number) => {
+
+        if (!course || !course.modules || !courseId) return;
+
+        const content = course.modules[moduleIndex].contents[contentIndex];
+        const isCompleted = content.isCompleted;
+
+
+        try {
+            if (isCompleted) {
+                // Unmark content as completed
+                await unmarkContentCompleted(courseId as string, content._id);
+            } else {
+                // Mark content as completed
+                await markContentCompleted(courseId as string, content._id);
+            }
+
+            // Update the state to reflect the change
+            const updatedCourse = { ...course };
+            if (updatedCourse.modules) {
+                // Ensure modules and contents are defined
+                if (updatedCourse.modules[moduleIndex]?.contents) {
+                    updatedCourse.modules[moduleIndex].contents[contentIndex].isCompleted = !isCompleted;
+                }
+            }
+            setCourse(updatedCourse);
+            showToast('Bookmark Added', 'success', 'small-toast', 2000, 'bottom-left');
+
+
+        } catch (error) {
+            showToast('Failed to update content completion status', 'error');
+            console.error('Error updating content completion status', error);
+        }
+    };
+
+
+
 
     if (loading) {
         return <div className="text-center py-6">Loading...</div>;
@@ -134,7 +212,7 @@ const CourseDetail: React.FC = () => {
                                                 {Array.from({ length: 5 }).map((_, index) => (
                                                     <svg
                                                         key={index}
-                                                        className={`w-4 h-4 ${index < (course.rating ?? 3) ? 'text-yellow-300' : 'text-gray-300'} ms-1`}
+                                                        className={`w-4 h-4 ${index < Math.round(course.rating ?? 3) ? 'text-yellow-300' : 'text-gray-300'} ms-1`}
                                                         aria-hidden="true"
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="currentColor"
@@ -219,7 +297,7 @@ const CourseDetail: React.FC = () => {
                                 <h2 className="text-3xl font-bold text-gray-900 mb-4">
                                     ₹{course.fees ? course.fees.toFixed(2) : 'Price not available'}
                                 </h2>
-                                <PaymentComponent courseId={course._id} instructorEmail={course.instructorEmail}/>
+                                <PaymentComponent courseId={course._id} instructorEmail={course.instructorEmail} />
 
                                 <ul className="text-gray-600 space-y-2">
                                     {[
@@ -241,8 +319,8 @@ const CourseDetail: React.FC = () => {
                         <div className="bg-white rounded-lg shadow-md p-6 mt-8">
                             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Course Content</h2>
                             <Accordion type="single" collapsible>
-                                {course.modules && course.modules.map((module, index) => (
-                                    <AccordionItem key={index} value={`module-${index}`}>
+                                {course.modules && course.modules.map((module, moduleIndex) => (
+                                    <AccordionItem key={moduleIndex} value={`module-${moduleIndex}`}>
                                         <AccordionTrigger className="text-lg font-medium text-gray-800 mb-2">
                                             {module.title}
                                         </AccordionTrigger>
@@ -255,17 +333,34 @@ const CourseDetail: React.FC = () => {
                                                     >
                                                         <span
                                                             onClick={() => handleVideoClick(content.url)}
-                                                            className={`text-black hover:text-blue-400  ${!content.url ? "text-gray-500 cursor-not-allowed" : "cursor-pointer"}`}
+                                                            className={`text-black hover:text-blue-400 ${!content.url ? "text-gray-500 cursor-not-allowed" : "cursor-pointer"}`}
                                                             title={!content.url ? "Unlock by Purchase" : ""}
                                                         >
                                                             {content.title}
                                                         </span>
-                                                        <input
-                                                            type="checkbox"
-                                                            className="form-checkbox h-4 w-4 text-blue-600"
-                                                            title="Mark as completed"
-                                                            disabled={!content.url}
-                                                        />
+                                                        <div className="flex items-center space-x-2">
+                                                            {/* Star icon for marking as important */}
+                                                            {content.isImportant ? (
+                                                                <SolidStarIcon
+                                                                    className="h-5 w-5 text-yellow-400 cursor-pointer"
+                                                                    onClick={() => handleStarToggle(moduleIndex, contentIndex)}
+                                                                />
+                                                            ) : (
+                                                                <OutlineStarIcon
+                                                                    className="h-5 w-5 text-gray-400 cursor-pointer"
+                                                                    onClick={() => handleStarToggle(moduleIndex, contentIndex)}
+                                                                />
+                                                            )}
+                                                            {/* Checkbox */}
+                                                            <input
+                                                                type="checkbox"
+                                                                className="form-checkbox h-4 w-4 text-blue-600"
+                                                                title="Mark as completed"
+                                                                checked={content.isCompleted || false}
+                                                                onChange={() => handleCheckboxToggle(moduleIndex, contentIndex)}
+                                                                disabled={!content.url}
+                                                            />
+                                                        </div>
                                                     </li>
                                                 ))}
                                             </ul>
@@ -274,7 +369,6 @@ const CourseDetail: React.FC = () => {
                                 ))}
                             </Accordion>
                         </div>
-
                     </motion.div>
                 </div>
             </div>

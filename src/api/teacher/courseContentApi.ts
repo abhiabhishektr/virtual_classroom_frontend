@@ -6,8 +6,8 @@ import { TEACHER_ENDPOINT } from '../../utils/constants';
 import { ApiIContent, IChapter, IContent } from '../../types/contentTypes';
 
 // Function to add a new module to a course
-export const addModule = async (courseId: string,title: string): Promise<IChapter[]> => {
-    const response = await axiosInstance.post(`${TEACHER_ENDPOINT}/modules`, { courseId ,title})
+export const addModule = async (courseId: string, title: string): Promise<IChapter[]> => {
+    const response = await axiosInstance.post(`${TEACHER_ENDPOINT}/modules`, { courseId, title })
     return response.data;
 };
 
@@ -24,12 +24,11 @@ export const getModuleById = async (moduleId: string): Promise<any> => {
 };// not in use right now
 
 // Function to update a module by ID
-export const updateModule = async (moduleId: string, data: object): Promise<any> => {
-    const response = await axiosInstance.put(`${TEACHER_ENDPOINT}/modules/${moduleId}`, data, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+export const updateModule = async (chapterId: string, courseId: string, moduleId: string, newTitle: string): Promise<any> => {
+    const response = await axiosInstance.put(
+        `${TEACHER_ENDPOINT}/courses/${courseId}/modules/${moduleId}/chapters/${chapterId}`,
+        { title: newTitle }
+    )
     return response.data;
 };
 
@@ -44,14 +43,14 @@ export const deleteModule = async (moduleId: string, courseId: string, chapterId
 };
 
 // Function to delete a module by ID
-export const renameModule = async (moduleId: string, courseId: string, chapterId: string): Promise<any> => {
-    console.log(`courseId: ${courseId}, moduleId: ${moduleId}, chapterId: ${chapterId}`);
+// export const renameModule = async (moduleId: string, courseId: string, chapterId: string): Promise<any> => {
+//     console.log(`courseId: ${courseId}, moduleId: ${moduleId}, chapterId: ${chapterId}`);
 
-    const response = await axiosInstance.put(`${TEACHER_ENDPOINT}/modules/${chapterId}`, {
-        data: { moduleId, courseId },
-    });
-    return response.data;
-};
+//     const response = await axiosInstance.put(`${TEACHER_ENDPOINT}/modules/${chapterId}`, {
+//         data: { moduleId, courseId },
+//     });
+//     return response.data;
+// };
 
 
 export const updateContent = async (chapterId: string, contentId: string, courseId: string, moduleId: string): Promise<any> => {
@@ -106,9 +105,9 @@ export const deleteContent = async (chapterId: string, contentId: string, course
     return response.data;
 };
 
-export const renameContent = async (chapterId: string, contentId: string, courseId: string, moduleId: string): Promise<any> => {
+export const renameContent = async (courseId: string, moduleId: string, chapterId: string, contentId: string, newTitle: string): Promise<any> => {
     const response = await axiosInstance.put(`${TEACHER_ENDPOINT}/content`, {
-        data: { chapterId, moduleId, contentId, courseId },
+        data: { chapterId, moduleId, contentId, courseId, newTitle },
     });
     return response.data;
 };

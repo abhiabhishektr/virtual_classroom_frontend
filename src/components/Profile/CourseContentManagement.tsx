@@ -4,7 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { FaEdit, FaTrash, FaPlus, FaVideo, FaFile, FaPlayCircle, FaChevronRight, FaChevronDown, FaTimes } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IChapter, IContent, courseContentDetails } from '../../types/contentTypes';
-import { deleteModule, deleteContent, uploadContent, addModule } from '../../api/teacher/courseContentApi';
+import { deleteModule, deleteContent, uploadContent, addModule, updateModule, renameContent } from '../../api/teacher/courseContentApi';
+import { showToast } from '../../utils/toast';
+
+
 
 interface CourseContentManagementProps {
     chapters: IChapter[];
@@ -14,13 +17,14 @@ interface CourseContentManagementProps {
 const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapters: initialChapters, courseDetails }) => {
     const courseId: string | undefined = courseDetails.courseId
     const moduleId: string | undefined = courseDetails.ModuleId
+    console.log("moduleId: ", moduleId);
 
     const [chapters, setChapters] = useState<IChapter[]>([]);
     const [tempChapter, setTempChapter] = useState<IChapter | null>(null);
 
     const [activeChapter, setActiveChapter] = useState<string | null>(null);
     const [activeContent, setActiveContent] = useState<IContent | null>(null);
-    const [editMode, setEditMode] = useState<'chapter' | 'content' | null>(null);
+    const [editMode, setEditMode] = useState<'chapter' | 'content' | 'Chapter' | null>(null);
     const [editItem, setEditItem] = useState<any>(null);
     const [newTitle, setNewTitle] = useState<string>('');
 
@@ -88,55 +92,75 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
             contents: [],
         };
         setTempChapter(newChapter);
-        setEditMode('chapter');
+        setEditMode('Chapter');
         setEditItem(newChapter);
         setNewTitle(newChapter.title);
     };
 
-    const handleSave = async () => {
-        if (tempChapter) {
-            // Update local state
-            setChapters(prevChapters => [...prevChapters, tempChapter]);
-            const newModules = await addModule(courseId, newTitle);
-            console.log("newModules: ", newModules);
-            setChapters(newModules)
-            // Optionally, call the API to save the chapter to the database
-            // await addChapterApi(tempChapter);
-
-            // Clear temporary chapter state
-            setTempChapter(null);
-        }
-        setEditMode(null);
-        setEditItem(null);
-        setNewTitle('');
-    };
 
 
-    const handleEdit = (e: React.FormEvent) => {
+
+    const handleEdit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (editMode === 'chapter') {
-            if (!tempChapter) {
-                setChapters(prevChapters => prevChapters.map((chapter) =>
-                    chapter._id === editItem._id ? { ...chapter, title: newTitle } : chapter
-                ));
+            try {
+                updateModule(courseId, moduleId, editItem._id, newTitle);
+
+
+                if (!tempChapter) {
+                    setChapters(prevChapters => prevChapters.map((chapter) =>
+                        chapter._id === editItem._id ? { ...chapter, title: newTitle } : chapter
+                    ));
+                }
+                showToast ('Edit Success', 'success', 'small-toast',2000,'bottom-center');
+
+            } catch (error) {
+                console.log(error);
+                showToast ('Edit Failed', 'error', 'small-toast',2000,'bottom-center');
+
             }
 
 
         } else if (editMode === 'content') {
-            setChapters(prevChapters => prevChapters.map((chapter) =>
-                chapter._id === activeChapter
-                    ? {
-                        ...chapter,
-                        contents: chapter.contents.map((content) =>
-                            content._id === editItem._id ? { ...content, title: newTitle } : content
-                        ),
-                    }
-                    : chapter
-            ));
+            try {
+                // renameContent(activeChapter, editItem._id, courseId, moduleId, newTitle);
+
+                if (activeChapter !== null) {
+                    renameContent(courseId, moduleId, activeChapter, editItem._id, newTitle);
+                }
+                setChapters(prevChapters => prevChapters.map((chapter) =>
+                    chapter._id === activeChapter
+                        ? {
+                            ...chapter,
+                            contents: chapter.contents.map((content) =>
+                                content._id === editItem._id ? { ...content, title: newTitle } : content
+                            ),
+                        }
+                        : chapter
+                ));
+                showToast ('Edit Success', 'success', 'small-toast',2000,'bottom-center');
+
+            } catch (error) {
+                console.log(error);
+                showToast ('Edit Failed', 'error', 'small-toast',2000,'bottom-center');
+
+            }
+
         }
+
+        else if (tempChapter && editMode === 'Chapter') {
+            setChapters(prevChapters => [...prevChapters, tempChapter]);
+            const newModules = await addModule(courseId, newTitle);
+            console.log("newModules: ", newModules);
+            setChapters(newModules)
+            setTempChapter(null);
+            showToast ('Edit Success', 'success', 'small-toast',2000,'bottom-center');
+        }
+
         setEditMode(null);
         setEditItem(null);
         setNewTitle('');
+
     };
 
     const handleDelete = (chapterId: string, contentId?: string) => {
@@ -314,8 +338,7 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
                                 Cancel
                             </button>
                             <button
-                                type="button"
-                                onClick={handleSave}
+                                type="submit"
                                 className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                             >
                                 Save
