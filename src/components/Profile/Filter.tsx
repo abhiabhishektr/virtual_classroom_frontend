@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {Accordion, AccordionItem, AccordionTrigger, AccordionContent} from '../ui/accordion';
+import { Input } from '../ui/input';
 
 interface FilterProps {
   onFilterChange: (selectedFilters: { categories: string[]; priceRange: string[] }) => void;
@@ -35,15 +35,13 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
     <div className="space-y-4">
       <h2 className="text-lg font-semibold mb-4">Filter Courses</h2>
 
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <div className="font-medium">Categories</div>
-        </AccordionSummary>
-        <AccordionDetails>
-          <div className="flex flex-col space-y-2">
+      <Accordion type="multiple">
+        <AccordionItem value="categories">
+          <AccordionTrigger>Categories</AccordionTrigger>
+          <AccordionContent>
             {categories.map(category => (
               <label key={category} className="flex items-center space-x-3">
-                <input
+                <Input
                   type="checkbox"
                   checked={selectedCategories.includes(category)}
                   onChange={() => handleCategoryChange(category)}
@@ -52,19 +50,15 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
                 <span>{category}</span>
               </label>
             ))}
-          </div>
-        </AccordionDetails>
-      </Accordion>
+          </AccordionContent>
+        </AccordionItem>
 
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <div className="font-medium">Price Range</div>
-        </AccordionSummary>
-        <AccordionDetails>
-          <div className="flex flex-col space-y-2">
+        <AccordionItem value="priceRange">
+          <AccordionTrigger>Price Range</AccordionTrigger>
+          <AccordionContent>
             {priceRanges.map(range => (
               <label key={range} className="flex items-center space-x-3">
-                <input
+                <Input
                   type="checkbox"
                   checked={selectedPriceRange.includes(range)}
                   onChange={() => handlePriceRangeChange(range)}
@@ -73,8 +67,8 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
                 <span>{range}</span>
               </label>
             ))}
-          </div>
-        </AccordionDetails>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
 
       {/* Display selected filters as capsules */}
