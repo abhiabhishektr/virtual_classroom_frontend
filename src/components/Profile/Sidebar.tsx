@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from "../../hooks/useAuth";
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import { signOut } from '../../api/authApi';
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate(); 
@@ -10,8 +11,9 @@ const Sidebar: React.FC = () => {
   const { role, profilePicture, name } = useSelector((state: RootState) => state.profile);
   const location = useLocation();
 
-  const handleLogout = () => {
+  const handleLogout = async() => {
     logout();
+    await signOut();
     navigate('/auth/login');
   };
 

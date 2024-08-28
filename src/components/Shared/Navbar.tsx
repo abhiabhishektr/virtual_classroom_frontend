@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FiGrid, FiBook, FiClipboard, FiBell, FiUser, FiLogIn, FiMenu, FiX } from 'react-icons/fi';
 import { Button } from '../ui/button';
+import { useDispatch } from 'react-redux';
+import { resetAuthState } from '../../redux/slices/authSlice';
+
 
 const Navbar: React.FC = () => {
   const [selectedButton, setSelectedButton] = useState<string | null>('Dashboard');
@@ -9,6 +12,9 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const dispatch = useDispatch();
+
 
   useEffect(() => {
     const authToken = localStorage.getItem('authToken'); // Replace with your authToken retrieval logic
@@ -38,6 +44,9 @@ const Navbar: React.FC = () => {
   };
 
   const handleLoginClick = () => {
+  dispatch(resetAuthState());
+  console.log("handleLoginClick called");
+  
     navigate(`/auth/login`);
   };
 

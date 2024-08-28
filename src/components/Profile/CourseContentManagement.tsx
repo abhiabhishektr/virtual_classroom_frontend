@@ -8,6 +8,7 @@ import { deleteModule, deleteContent, uploadContent, addModule, updateModule, re
 import { showToast } from '../../utils/toast';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../redux/slices/profileSlice';
+import Swal from 'sweetalert2';
 
 
 interface CourseContentManagementProps {
@@ -35,21 +36,35 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
 
     const onDrop = useCallback(async (acceptedFiles: File[], chapterId: string) => {
         for (const file of acceptedFiles) {
-            const reader = new FileReader();
-            reader.onload = async () => {
-                const url = URL.createObjectURL(file);
+            const url = URL.createObjectURL(file);
+    
+            // Show SweetAlert2 popup for file preview and renaming
+            const { value: fileName } = await Swal.fire({
+                title: 'Preview and Upload',
+                input: 'text',
+                inputLabel: 'Change file name',
+                inputValue: file.name,
+                showCancelButton: true,
+                confirmButtonText: 'Upload',
+                cancelButtonText: 'Cancel',
+                html: file.type.startsWith('video')
+                    ? `<video src="${url}" controls width="100%"></video>`
+                    : `<iframe src="${url}" width="100%" height="500px"></iframe>`,
+            });
+    
+            if (fileName) {
                 const newContent: IContent = {
                     _id: uuidv4(),
                     type: file.type.startsWith('video') ? 'video' : 'document',
-                    title: file.name,
+                    title: fileName, // Use the modified file name
                     url: url,
                     duration: file.type.startsWith('video') ? 0 : undefined,
                 };
                 await addContent(chapterId, newContent);
-            };
-            reader.readAsArrayBuffer(file);
+            }
         }
     }, [courseId, moduleId]); // Add courseId and moduleId to the dependency array
+     // Add courseId and moduleId to the dependency array
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop: (acceptedFiles) => activeChapter && onDrop(acceptedFiles, activeChapter),
@@ -167,31 +182,66 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
 
     };
 
-    const handleDelete = (chapterId: string, contentId?: string) => {
+    const handleDelete = async (chapterId: string, contentId?: string) => {
         if (!courseId) {
             console.error('Course ID is missing');
             return;
         }
-
+    
         if (contentId) {
             const chapter = chapters.find(c => c._id === chapterId);
-            console.log(`Deleting content with ID: ${contentId} from chapter with ID: ${chapterId} (${chapter?.title || "Unknown Chapter"})`);
-
-            deleteContent(chapterId, contentId, courseId, moduleId);
-
-            setChapters(prevChapters => prevChapters.map((chapter) =>
-                chapter._id === chapterId
-                    ? { ...chapter, contents: chapter.contents.filter((content) => content._id !== contentId) }
-                    : chapter
-            ));
+            const content = chapter?.contents.find(c => c._id === contentId);
+    
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you really want to delete the content "${content?.title || "this item"}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+            });
+    
+            if (result.isConfirmed) {
+                console.log(`Deleting content with ID: ${contentId} from chapter with ID: ${chapterId} (${chapter?.title || "Unknown Chapter"})`);
+    
+                await deleteContent(chapterId, contentId, courseId, moduleId);
+    
+                setChapters(prevChapters => prevChapters.map((chapter) =>
+                    chapter._id === chapterId
+                        ? { ...chapter, contents: chapter.contents.filter((content) => content._id !== contentId) }
+                        : chapter
+                ));
+    
+                Swal.fire('Deleted!', 'Your content has been deleted.', 'success');
+            }
         } else {
             const chapter = chapters.find(c => c._id === chapterId);
-            deleteModule(moduleId, courseId, chapterId);
-            console.log(`Deleting chapter with ID: ${chapterId} (${chapter?.title || "Unknown Chapter"})`);
-
-            setChapters(prevChapters => prevChapters.filter((chapter) => chapter._id !== chapterId));
+    
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you really want to delete the chapter "${chapter?.title || "this chapter"}" and all its contents?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+            });
+    
+            if (result.isConfirmed) {
+                console.log(`Deleting chapter with ID: ${chapterId} (${chapter?.title || "Unknown Chapter"})`);
+    
+                await deleteModule(moduleId, courseId, chapterId);
+    
+                setChapters(prevChapters => prevChapters.filter((chapter) => chapter._id !== chapterId));
+    
+                Swal.fire('Deleted!', 'Your chapter has been deleted.', 'success');
+            }
         }
     };
+    
 
     return (
         <div className="flex h-screen bg-gray-100 font-sans">

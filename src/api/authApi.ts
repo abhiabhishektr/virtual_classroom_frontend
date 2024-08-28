@@ -89,3 +89,14 @@ export const forgotPassword = async (email: string, password: string, otp: strin
     throw error;
   }
 };
+
+export const signOut = async (): Promise<any> => {
+  try {
+    const response = await axiosInstance.post(`${AUTH_ENDPOINT}//logout`);
+    console.log('Login successful:', response);
+    return response; // Assuming backend sends back some data on successful login
+  } catch (error) {
+    console.error('Login failed:', error);
+    throw error;
+  }
+};
