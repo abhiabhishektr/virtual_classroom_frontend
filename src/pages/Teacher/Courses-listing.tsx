@@ -1,3 +1,4 @@
+// src/pages/Teacher/Courses-listing.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import debounce from 'lodash.debounce';
 import CourseCard from '../../components/Profile/CourseCard';
@@ -12,6 +13,9 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Filter from '../../components/Profile/Filter';
 
+// Define the type for the filters state
+
+
 const CourseListing: React.FC = () => {
   const dispatch = useDispatch();
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
@@ -21,20 +25,18 @@ const CourseListing: React.FC = () => {
   const [showMyLearnings, setShowMyLearnings] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [loadingSkeleton, setLoadingSkeleton] = useState<boolean>(true);
-  const [selectedFilters, setSelectedFilters] = useState<{ categories: string[]; priceRange: string[] }>({ categories: [], priceRange: [] });
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [coursesPerPage] = useState<number>(8);
+
+  const [category, setCategory] = useState<string>('');
+  const [priceRange, setPriceRange] = useState<string>('');
 
   const fetchCourses = useCallback(
     debounce(async (search: string, sort: string, currentPage: number, showMyLearnings: boolean) => {
       try {
         dispatch(setLoading(true));
-        const filter = {
-          categories: selectedFilters.categories,
-          priceRange: selectedFilters.priceRange,
-        };
-        const response = await getUserCourses(showMyLearnings, search, sort, currentPage, filter);
+        const response = await getUserCourses(showMyLearnings, search, sort, currentPage, undefined, category, priceRange);
         setFilteredCourses(response.courses);
         setTotalPages(response.totalPages);
         setLoadingSkeleton(false);
@@ -45,12 +47,13 @@ const CourseListing: React.FC = () => {
         dispatch(setLoading(false));
       }
     }, 600),
-    [dispatch, selectedFilters]
+    [dispatch, category, priceRange]
   );
+
 
   useEffect(() => {
     fetchCourses(searchTerm, sortOption, currentPage, showMyLearnings);
-  }, [searchTerm, sortOption, currentPage, showMyLearnings, selectedFilters, fetchCourses]);
+  }, [searchTerm, sortOption, currentPage, showMyLearnings, category, priceRange, fetchCourses]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -64,8 +67,9 @@ const CourseListing: React.FC = () => {
     setShowMyLearnings(prev => !prev);
   };
 
-  const handleFilterChange = (filters: { categories: string[]; priceRange: string[] }) => {
-    setSelectedFilters(filters);
+  const handleFilterChange = (newCategory: string, newPriceRange: string) => {
+    setCategory(newCategory);
+    setPriceRange(newPriceRange);
   };
 
   const indexOfLastCourse = currentPage * coursesPerPage;
@@ -77,14 +81,14 @@ const CourseListing: React.FC = () => {
   }
 
   return (
-    <div className="p-6 grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <div className="p-6 grid lg:grid-cols-6 gap-4">
       {/* Left Sidebar for Filters */}
       <div className="lg:col-span-1">
         <Filter onFilterChange={handleFilterChange} />
       </div>
 
       {/* Main Content for Course Listing */}
-      <div className="lg:col-span-3">
+      <div className="lg:col-span-5">
         <div className="flex justify-between items-center mb-6">
           <div className="w-64">
             <SearchBar onSearch={handleSearch} />
@@ -119,7 +123,7 @@ const CourseListing: React.FC = () => {
               <Skeleton key={index} height={150} width="100%" />
             ))
           ) : (
-            currentCourses.map(course => <CourseCard key={course._id} course={course} />)
+            currentCourses.map(course => <CourseCard key={course.id} course={course} />)
           )}
         </div>
         <div className="mt-8">

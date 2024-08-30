@@ -17,7 +17,7 @@ axiosRetry(axiosInstance, {
 const refreshToken = async () => {
   const refreshToken = localStorage.getItem('refreshToken');
   const response = await axios.post(`${API_BASE_URL}api/auth/refresh-token`, { refreshToken });
-  console.log('refresh', response.data);
+  // console.log('refresh', response.data);
   return response.data;
 };
 
@@ -34,7 +34,7 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log('API response:', response.data); // Log the entire response
+    // console.log('API response:', response.data); // Log the entire response
     return response.data; // Return the response data for further processing
   },
   async (error) => {

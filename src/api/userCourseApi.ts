@@ -1,8 +1,9 @@
+
 // src/api/userCourseApi.ts
 import { PROFILE_ENDPOINT } from '../utils/constants';
 import axiosInstance from './axiosInstance'; // Make sure axiosInstance is properly configured
 import { courseListingDTO } from "../types/courseListingDTO";
-import {ICourse} from "../types/CourseTypes";
+import { ICourse } from "../types/CourseTypes";
 
 // // Define the Course interface
 // interface Course {
@@ -18,11 +19,11 @@ interface Purchase {
     courseTitle: string;
     purchaseDate: string;
     amount: number;
-  }
-  
-  interface PurchaseHistoryResponse {
+}
+
+interface PurchaseHistoryResponse {
     data: Purchase[];
-  }
+}
 
 // Add a new course for a user
 export const addUserCourse = async (data: object): Promise<any> => {
@@ -59,23 +60,40 @@ export const deleteUserCourse = async (courseId: string): Promise<void> => {
 // Fetch all courses for a user
 
 
-export const getUserCourses = async (showMyLearnings: boolean, searchTerm = '', sortOption = '', page = 1, limit = 8): Promise<any> => {
+export const getUserCourses = async (
+    showMyLearnings: boolean,
+    searchTerm = '',
+    sortOption = '',
+    page = 1,
+    limit = 8,
+    category?: string,
+    priceRange?: string
+): Promise<any> => {
+    console.log('Category:', category);
+    console.log('Price Range:', priceRange);
+
     if (showMyLearnings) {
         const response = await axiosInstance.get<courseListingDTO[]>(`${PROFILE_ENDPOINT}/user-courses`);
         return response.data;
+    } else {
+
+
+
+        const response = await axiosInstance.get<courseListingDTO[]>(`${PROFILE_ENDPOINT}/all-courses`, {
+            params: {
+                search: searchTerm,
+                sort: sortOption,
+                page,
+                limit,
+                category,
+                priceRange,
+            },
+
+        });
+
+        return response.data;
     }
-    const response = await axiosInstance.get<courseListingDTO[]>(`${PROFILE_ENDPOINT}/all-courses`, {
-        params: {
-          search: searchTerm,
-          sort: sortOption,
-          page,
-          limit
-        }
-      });
-    return response.data;
 };
-
-
 
 export const coursesPurchased = async (): Promise<PurchaseHistoryResponse[]> => {
     const response = await axiosInstance.get<PurchaseHistoryResponse[]>(`${PROFILE_ENDPOINT}/coursePurchaseHistory`);

@@ -21,7 +21,6 @@ const AppContent: React.FC = () => {
   const shouldShowNavbar = !isAuthRoute && !isAdminRoute;
   const isLoading = useSelector((state: RootState) => state.profile.loading);
   const isAuthenticated = useSelector((state: RootState) => Boolean(state.auth.authToken)); // Use Redux state
-  console.log("isAuthenticated: ", isAuthenticated);
 
   useEffect(() => {
     if (isAuthenticated && isAuthRoute) {

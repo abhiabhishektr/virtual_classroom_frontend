@@ -1,17 +1,29 @@
 import React, { useState } from 'react';
-import {Accordion, AccordionItem, AccordionTrigger, AccordionContent} from '../ui/accordion';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../ui/accordion';
 import { Input } from '../ui/input';
 
 interface FilterProps {
-  onFilterChange: (selectedFilters: { categories: string[]; priceRange: string[] }) => void;
+  onFilterChange: (categories: string, priceRange: string) => void;
 }
 
-const categories = ['Programming', 'Science', 'History', 'Mathematics', 'Literature', 'Art'];
-const priceRanges = ['500 and below', '1000 and below', '5000 and below', 'Above 5000'];
+type Category = 'Programming' | 'Science' | 'History' | 'Mathematics' | 'Literature' | 'Art';
+const categories: Category[] = ['Programming', 'Science', 'History', 'Mathematics', 'Literature', 'Art'];
+
+interface PriceRange {
+  label: string;
+  value: string;
+}
+
+const priceRanges: PriceRange[] = [
+  { label: '500 and below', value: '$lte:500' },
+  { label: '1000 and below', value: '$lte:1000' },
+  { label: '5000 and below', value: '$lte:5000' },
+  { label: 'Above 5000', value: '$gt:5000' },
+];
 
 const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedPriceRange, setSelectedPriceRange] = useState<string[]>([]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
 
   const handleCategoryChange = (category: string) => {
     const newCategories = selectedCategories.includes(category)
@@ -19,16 +31,19 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
       : [...selectedCategories, category];
 
     setSelectedCategories(newCategories);
-    onFilterChange({ categories: newCategories, priceRange: selectedPriceRange });
+    applyFilters(newCategories, selectedPriceRange);
   };
 
   const handlePriceRangeChange = (priceRange: string) => {
-    const newPriceRange = selectedPriceRange.includes(priceRange)
-      ? selectedPriceRange.filter(pr => pr !== priceRange)
-      : [...selectedPriceRange, priceRange];
-
+    const newPriceRange = selectedPriceRange === priceRange ? null : priceRange;
     setSelectedPriceRange(newPriceRange);
-    onFilterChange({ categories: selectedCategories, priceRange: newPriceRange });
+    applyFilters(selectedCategories, newPriceRange);
+  };
+
+  const applyFilters = (categories: string[], priceRange: string | null) => {
+    const categoriesString = categories.join(',');
+    const priceRangeString = priceRange || '';
+    onFilterChange(categoriesString, priceRangeString);
   };
 
   return (
@@ -57,32 +72,34 @@ const Filter: React.FC<FilterProps> = ({ onFilterChange }) => {
           <AccordionTrigger>Price Range</AccordionTrigger>
           <AccordionContent>
             {priceRanges.map(range => (
-              <label key={range} className="flex items-center space-x-3">
+              <label key={range.label} className="flex items-center space-x-3">
                 <Input
-                  type="checkbox"
-                  checked={selectedPriceRange.includes(range)}
-                  onChange={() => handlePriceRangeChange(range)}
-                  className="form-checkbox h-4 w-4"
+                  type="radio"
+                  checked={selectedPriceRange === range.value}
+                  onChange={() => handlePriceRangeChange(range.value)}
+                  className="form-radio h-4 w-4"
                 />
-                <span>{range}</span>
+                <span>{range.label}</span>
               </label>
             ))}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
 
-      {/* Display selected filters as capsules */}
       <div className="mt-4 space-y-2">
         {selectedCategories.map(category => (
-          <span key={category} className="inline-block bg-blue-200 text-blue-800 text-sm px-2 py-1 rounded-full">
+          <span key={category} className="inline-block bg-blue-200 text-blue-800 text-sm px-2 py-1 rounded-full mr-2">
             {category}
           </span>
         ))}
-        {selectedPriceRange.map(range => (
-          <span key={range} className="inline-block bg-green-200 text-green-800 text-sm px-2 py-1 rounded-full">
-            {range}
+        {selectedPriceRange && (
+          <span
+            className="inline-block bg-green-200 text-green-800 text-sm px-2 py-1 rounded-full cursor-pointer"
+            onClick={() => handlePriceRangeChange(selectedPriceRange)} // Allows clearing of price range
+          >
+            {priceRanges.find(range => range.value === selectedPriceRange)?.label}
           </span>
-        ))}
+        )}
       </div>
     </div>
   );
