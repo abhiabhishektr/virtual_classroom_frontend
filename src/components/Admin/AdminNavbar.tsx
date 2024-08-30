@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FiGrid, FiUsers, FiBookOpen, FiBell } from 'react-icons/fi';
-import { FiUser, FiLogIn, FiLogOut } from 'react-icons/fi';
+import { FiLogIn, FiLogOut } from 'react-icons/fi';
 import { FaFlickr } from 'react-icons/fa';
 // import { useAuth } from '../../hooks/useAuth';
 
@@ -41,9 +41,6 @@ const AdminNavbar: React.FC = () => {
     setSelectedButton(buttonName);
   };
 
-  const handleProfileClick = () => {
-    navigate('/profile');
-  };
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken'); // Clear auth token on logout
@@ -127,13 +124,6 @@ const AdminNavbar: React.FC = () => {
         <div className="flex items-center">
           {isLoggedIn ? (
             <>
-              <button
-                onClick={handleProfileClick}
-                className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md flex items-center transition-colors"
-              >
-                <FiUser className="mr-2" />
-                Profile
-              </button>
               <button
                 onClick={handleLogout}
                 className="text-gray-500 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md flex items-center transition-colors ml-4"

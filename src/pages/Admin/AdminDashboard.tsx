@@ -3,7 +3,6 @@
 import React from 'react';
 
 const AdminDashboard: React.FC = () => {
-  console.log('haiaia');
   
   return (
     <div className="min-h-screen bg-white p-4">
