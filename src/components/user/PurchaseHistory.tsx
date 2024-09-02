@@ -1,17 +1,12 @@
 import React from 'react';
-
-interface Purchase {
-  courseId: string;
-  courseTitle: string;
-  purchaseDate: string;
-  amount: number;
-}
+import { Purchase } from '../../api/userCourseApi';
 
 interface PurchaseHistoryProps {
   purchaseHistory: Purchase[];
 }
 
 const PurchaseHistory: React.FC<PurchaseHistoryProps> = ({ purchaseHistory }) => {
+  
   return (
     <div className="max-w-7xl mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Purchase History</h1>

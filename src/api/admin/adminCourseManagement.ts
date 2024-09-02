@@ -1,14 +1,13 @@
 // src/api/courseApi.ts
 
 import { ADMIN_ENDPOINT } from "../../utils/constants";
-import axiosInstance from "../axiosInstance"; // Adjust the import based on your project's setup
-
+import adminAxiosInstance from "./adminAxiosInstance";
 
 
 // Function to list all courses
 export const getCourses = async (): Promise<any> => {
     try {
-        const response = await axiosInstance.get(`${ADMIN_ENDPOINT}/courses`);
+        const response = await adminAxiosInstance.get(`${ADMIN_ENDPOINT}/courses`);
         return response.data;
     } catch (error) {
         throw new Error(`Failed to fetch courses: ${error}`);
@@ -17,8 +16,9 @@ export const getCourses = async (): Promise<any> => {
 
 // Function to block a course
 export const blockCourse = async (courseId: string): Promise<void> => {
+    console.log("courseId: ", courseId);
     try {
-        await axiosInstance.patch(`${ADMIN_ENDPOINT}/${courseId}/block`);
+        await adminAxiosInstance.patch(`${ADMIN_ENDPOINT}/courses/${courseId}/block`);
     } catch (error) {
         throw new Error(`Failed to block course: ${error}`);
     }
@@ -27,7 +27,7 @@ export const blockCourse = async (courseId: string): Promise<void> => {
 // Function to unblock a course
 export const unblockCourse = async (courseId: string): Promise<void> => {
     try {
-        await axiosInstance.patch(`${ADMIN_ENDPOINT}/${courseId}/unblock`);
+        await adminAxiosInstance.patch(`${ADMIN_ENDPOINT}/courses/${courseId}/unblock`);
     } catch (error) {
         throw new Error(`Failed to unblock course: ${error}`);
     }

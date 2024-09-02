@@ -1,38 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PurchaseHistory from '../../components/user/PurchaseHistory';
-import { coursesPurchased } from '../../api/userCourseApi';
-
-interface Purchase {
-  courseId: string;
-  courseTitle: string;
-  purchaseDate: string;
-  amount: number;
-}
+import { coursesPurchased, Purchase } from '../../api/userCourseApi';
+import { useApiQuery } from '../../hooks/useApiQuery';
 
 const CoursePurchaseHistory: React.FC = () => {
-  const [purchaseHistory, setPurchaseHistory] = useState<Purchase[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: purchaseHistory, error, isLoading } = useApiQuery<Purchase[]>(
+    coursesPurchased,
+    ['purchaseHistory'],
+  );
 
-  useEffect(() => {
-    const fetchPurchaseHistory = async () => {
-      try {
-        const response = await coursesPurchased(); // Fetch the purchase history data
-        setPurchaseHistory(response); // Set the purchaseHistory state with the data
-      } catch (err) {
-        setError('Failed to fetch purchase history');
-      } finally {
-        setLoading(false);
-      }
-    };
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
 
-    fetchPurchaseHistory();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
-
-  return <PurchaseHistory purchaseHistory={purchaseHistory} />;
+  return <PurchaseHistory purchaseHistory={purchaseHistory || []} />;
 };
 
 export default CoursePurchaseHistory;

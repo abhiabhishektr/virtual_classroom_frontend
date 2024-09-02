@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { useSocket } from '../../context/SocketContext';
+import DotPattern from '../magicui/dot-pattern';
+import { cn } from '../../lib/utils';
 
 interface Message {
   sender_id: string;
@@ -82,12 +84,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   return (
     <div className='h-full w-screen'>
       <div className="flex-1 flex flex-col bg-gray-100 rounded-lg shadow-md h-[87vh]">
-        <div className="bg-zinc-700 p-4 text-white flex items-center rounded-t-lg">
+        <div className="bg-zinc-700 p-4 text-white flex items-center rounded-t-lg z-10">
           <h2 className="text-xl font-bold">{selectedGroup?.groupName || 'Select a group'}</h2>
         </div>
         <div
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto p-4 h-[90vh]"
+          className="flex-1 overflow-y-auto p-4 h-[90vh] z-10"
         >
           {messages.map((message, index) => (
             <div
@@ -170,6 +172,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           </div>
         </div>
       </div>
+      <DotPattern
+        className={cn(
+          "[mask-image:radial-gradient(700px_circle_at_center,white,transparent)]",
+        )}
+      />
     </div>
   );
 };

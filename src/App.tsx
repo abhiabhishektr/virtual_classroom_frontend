@@ -14,6 +14,7 @@ import TestRoutes from './routes/TestRoutes';
 import ProfilePage from './routes/ProfileRoutes';
 
 const AppContent: React.FC = () => {
+
   const navigate = useNavigate();
   const location = useLocation();
   const isAuthRoute = location.pathname.startsWith('/auth');
@@ -54,10 +55,25 @@ const AppContent: React.FC = () => {
   );
 };
 
+
+
+
+
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { SocketProvider } from './context/SocketContext';
+
 const App: React.FC = () => {
+  const queryClient = new QueryClient();
   return (
     <Router>
-      <AppContent />
+      <QueryClientProvider client={queryClient}>
+        <SocketProvider>
+          <AppContent />
+          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+        </SocketProvider>
+      </QueryClientProvider>
     </Router>
   );
 };

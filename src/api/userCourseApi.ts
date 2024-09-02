@@ -5,26 +5,6 @@ import axiosInstance from './axiosInstance'; // Make sure axiosInstance is prope
 import { courseListingDTO } from "../types/courseListingDTO";
 import { ICourse } from "../types/CourseTypes";
 
-// // Define the Course interface
-// interface Course {
-//     id: string; // MongoDB ObjectId as a string
-//     title: string;
-//     description: string;
-//     imageUrl: string;
-//     fees: number;
-// }
-
-interface Purchase {
-    courseId: string;
-    courseTitle: string;
-    purchaseDate: string;
-    amount: number;
-}
-
-interface PurchaseHistoryResponse {
-    data: Purchase[];
-}
-
 // Add a new course for a user
 export const addUserCourse = async (data: object): Promise<any> => {
     const response = await axiosInstance.post(`${PROFILE_ENDPOINT}/courses`, data, {
@@ -95,8 +75,15 @@ export const getUserCourses = async (
     }
 };
 
-export const coursesPurchased = async (): Promise<PurchaseHistoryResponse[]> => {
-    const response = await axiosInstance.get<PurchaseHistoryResponse[]>(`${PROFILE_ENDPOINT}/coursePurchaseHistory`);
+export interface Purchase {
+    courseId: string;
+    courseTitle: string;
+    purchaseDate: string;
+    amount: number;
+}
+
+export const coursesPurchased = async (): Promise<Purchase[]> => {
+    const response = await axiosInstance.get<Purchase[]>(`${PROFILE_ENDPOINT}/coursePurchaseHistory`);
     return response.data;
 };
 

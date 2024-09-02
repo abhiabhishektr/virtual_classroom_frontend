@@ -13,7 +13,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken') || localStorage.getItem('adminToken');
 
     if (token) {
       

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { unblockCourse, blockCourse, getCourses } from '../../api/admin/adminCourseManagement';
 
 // Define your Course interface
-interface Course {
-  id: number;
+interface admincourses {
+  _id: string;  // Changed to string to match with the mutation functions
   title: string;
   description: string;
   imageUrl: string;
@@ -14,37 +14,45 @@ interface Course {
 }
 
 const AdminCourseList = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const fetchedCourses = await getCourses();
-        setCourses(fetchedCourses);
-      } catch (error) {
-        console.error('Error fetching courses:', error);
-      }
-    };
+  // Fetch courses using useQuery
+  const { data: admincourses=[], isLoading, isError } = useQuery<admincourses[]>({
+    queryKey: ['admincourses'],
+    queryFn: getCourses,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-    fetchCourses();
-  }, []);
+  // Mutations for blocking and unblocking courses
+  const blockCourseMutation = useMutation({
+    mutationFn: blockCourse,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admincourses'] });
+    },
+  });
 
-  const handleBlockUnblock = async (courseId: number, isBlocked: boolean) => {
-    try {
-      if (isBlocked) {
-        await unblockCourse(courseId.toString());
-      } else {
-        await blockCourse(courseId.toString());
-      }
-      setCourses(prevCourses =>
-        prevCourses.map(c =>
-          c.id === courseId ? { ...c, isBlocked: !c.isBlocked } : c
-        )
-      );
-    } catch (error) {
-      console.error('Error blocking/unblocking course:', error);
+  const unblockCourseMutation = useMutation({
+    mutationFn: unblockCourse,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admincourses'] });
+    },
+  });
+
+  const handleBlockUnblock = (courseId: string, isBlocked: boolean) => {
+    if (isBlocked) {
+      unblockCourseMutation.mutate(courseId);
+    } else {
+      blockCourseMutation.mutate(courseId);
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error fetching courses.</div>;
+  }
 
   return (
     <div className='h-[87vh] w-full overflow-y-auto'>
@@ -52,8 +60,8 @@ const AdminCourseList = () => {
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">Manage Courses</h2>
 
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {courses.map(course => (
-            <div key={course.id} className="bg-white shadow-sm rounded-lg overflow-hidden flex flex-col">
+          {admincourses.map(course => (
+            <div key={course._id} className="bg-white shadow-sm rounded-lg overflow-hidden flex flex-col">
               <div className="relative">
                 <img
                   src={course.imageUrl}
@@ -63,7 +71,8 @@ const AdminCourseList = () => {
                 <div className="absolute top-2 right-2">
                   <Button
                     className={`px-2 py-1 text-sm rounded ${course.isBlocked ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}
-                    onClick={() => handleBlockUnblock(course.id, course.isBlocked)}
+                    onClick={() => handleBlockUnblock(course._id, course.isBlocked)}
+                    disabled={blockCourseMutation.isPending || unblockCourseMutation.isPending}
                   >
                     {course.isBlocked ? 'Unblock' : 'Block'}
                   </Button>
@@ -79,7 +88,7 @@ const AdminCourseList = () => {
                 <p className="text-gray-600 text-sm mb-3">Fees: ₹{course.fees}</p>
                 <div className="flex justify-between items-center mt-auto">
                   <Link
-                    to={`/admin/course-details/${course.id}`}
+                    to={`/course/${course._id}`}
                     className="text-indigo-600 text-sm border border-indigo-600 px-3 py-1 rounded hover:bg-indigo-100 transition"
                   >
                     Details

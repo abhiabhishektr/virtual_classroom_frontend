@@ -1,3 +1,4 @@
+// src/routes/AdminRoutes.tsx
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import AdminDashboard from '../pages/Admin/AdminDashboard';
@@ -12,23 +13,24 @@ import PushNotifications from '../pages/Admin/PushNotifications';
 const AdminRoutes: React.FC = () => {
     const location = useLocation();
     const isAdminRoute = location.pathname === '/admin/adminlogin';
-
+    // Create a client
     return (
         <div className="AdminRoutes">
-            {!isAdminRoute && <AdminNavbar />}
-            <Routes>
-                {/* Admin login route */}
-                <Route path="/adminlogin" element={<AdminLogin />} />
+                {!isAdminRoute && <AdminNavbar />}
+                <Routes>
+                    {/* Admin login route */}
+                    <Route path="/adminlogin" element={<AdminLogin />} />
 
-                {/* Protected routes for logged-in admin */}
-                <Route element={<AdminIsLoggedIn />}>
-                    <Route path="/" element={<AdminDashboard />} />
-                    <Route path="/users" element={<AdminUsers />} />
-                    <Route path="/users-requests" element={< AdminTeacherRequests/>} />
-                    <Route path="/course-oversight" element={< CourseOversight/>} />
-                    <Route path="/push-notifications" element={< PushNotifications/>} />
-                </Route>
-            </Routes>
+                    {/* Protected routes for logged-in admin */}
+                    <Route element={<AdminIsLoggedIn />}>
+                        <Route path="/" element={<AdminDashboard />} />
+                        <Route path="/users" element={<AdminUsers />} />
+                        <Route path="/users-requests" element={< AdminTeacherRequests />} />
+                        <Route path="/course-oversight" element={< CourseOversight />} />
+                        <Route path="/push-notifications" element={< PushNotifications />} />
+
+                    </Route>
+                </Routes>
         </div>
     );
 }
@@ -36,9 +38,3 @@ const AdminRoutes: React.FC = () => {
 export default AdminRoutes;
 
 
-
-        //      {/* Routes for logged out admin */}
-        //      <Route path="/" element={<AdminIsLoggedOut />}>
-        //      <Route path="/" element={<AdminDashboard />} />
-        //      {/* <Route path="/users" element={<AdminUsers />} /> */}
-        //  </Route>
