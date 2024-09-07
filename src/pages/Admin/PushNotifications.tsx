@@ -5,33 +5,24 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 
-// Sample data for students and teachers
-const students = ['John Doe', 'Jane Smith', 'Alice Johnson', 'Robert Brown'];
+const users = ['John Doe', 'Jane Smith', 'Alice Johnson', 'Robert Brown'];
 const teachers = ['Mr. Anderson', 'Ms. Davis', 'Dr. Wilson', 'Prof. Harris'];
 
 const AdminPushNotificationPage: React.FC = () => {
     const { socket } = useSocket();
     const [title, setTitle] = useState('');
     const [message, setMessage] = useState('');
-    const [recipientType, setRecipientType] = useState('');
-    const [subOption, setSubOption] = useState('');
-    const [selectedUser, setSelectedUser] = useState('');
+    const [recipientType, setRecipientType] = useState<'all' | 'teachers' | ''>('');
+    const [selectedSpecific, setSelectedSpecific] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-
-    const handleRecipientTypeChange = (type: string) => {
+    const handleRecipientTypeChange = (type: 'all' | 'teachers') => {
         setRecipientType(type);
-        setSubOption('');
-        setSelectedUser('');
-    };
-
-    const handleSubOptionChange = (option: string) => {
-        setSubOption(option);
-        setSelectedUser('');
+        setSelectedSpecific('');
     };
 
     const handleUserSelection = (user: string) => {
-        setSelectedUser(user);
+        setSelectedSpecific(user);
     };
 
     const sendNotification = () => {
@@ -45,33 +36,25 @@ const AdminPushNotificationPage: React.FC = () => {
             return;
         }
 
-        if (recipientType === '' || (subOption === 'specific' && selectedUser === '')) {
-            toast.error('Please select a valid recipient.', { autoClose: 3000 });
-            return;
-        }
-
         setIsLoading(true);
 
         const notificationPayload = {
             title,
             message,
             recipientType,
-            recipient: subOption === 'specific' ? selectedUser : 'all',
+            recipient: selectedSpecific || 'all',
         };
 
-        // Emit the notification to the server
         socket.emit('admin-notification', notificationPayload);
 
         setTimeout(() => {
             setIsLoading(false);
             toast.success('Notification sent successfully!', { autoClose: 3000 });
 
-            // Reset form
             setTitle('');
             setMessage('');
             setRecipientType('');
-            setSubOption('');
-            setSelectedUser('');
+            setSelectedSpecific('');
         }, 1000);
     };
 
@@ -80,73 +63,45 @@ const AdminPushNotificationPage: React.FC = () => {
             <div className="w-full max-w-2xl bg-white rounded-lg shadow-md p-8 space-y-8">
                 <h1 className="text-4xl font-bold text-center text-blue-600 mb-6">Send Push Notification</h1>
 
-                {/* Recipient Type Selection */}
                 <div className="space-y-4">
                     <h2 className="text-xl font-semibold text-gray-800">Select Recipient Type</h2>
                     <div className="flex justify-between">
-                        <Button 
-                            onClick={() => handleRecipientTypeChange('all')} 
+                        <Button
+                            onClick={() => handleRecipientTypeChange('all')}
                             className={`w-full mr-2 ${recipientType === 'all' ? 'bg-blue-600' : 'bg-blue-500'}`}
                         >
                             All Users
                         </Button>
-                        <Button 
-                            onClick={() => handleRecipientTypeChange('students')} 
-                            className={`w-full mx-2 ${recipientType === 'students' ? 'bg-blue-600' : 'bg-blue-500'}`}
-                        >
-                            Students Only
-                        </Button>
-                        <Button 
-                            onClick={() => handleRecipientTypeChange('teachers')} 
+                        <Button
+                            onClick={() => handleRecipientTypeChange('teachers')}
                             className={`w-full ml-2 ${recipientType === 'teachers' ? 'bg-blue-600' : 'bg-blue-500'}`}
                         >
-                            Teachers Only
+                            All Teachers
                         </Button>
                     </div>
                 </div>
 
-                {/* Sub-Options based on Recipient Type */}
-                {(recipientType === 'students' || recipientType === 'teachers') && (
+                {recipientType && (
                     <div className="space-y-4">
-                        <h2 className="text-xl font-semibold text-gray-800">Send to</h2>
-                        <div className="flex justify-between">
-                            <Button 
-                                onClick={() => handleSubOptionChange('all')} 
-                                className={`w-full mr-2 ${subOption === 'all' ? 'bg-green-600' : 'bg-green-500'}`}
-                            >
-                                Send to All {recipientType === 'students' ? 'Students' : 'Teachers'}
-                            </Button>
-                            <Button 
-                                onClick={() => handleSubOptionChange('specific')} 
-                                className={`w-full ml-2 ${subOption === 'specific' ? 'bg-green-600' : 'bg-green-500'}`}
-                            >
-                                Send to Specific {recipientType === 'students' ? 'Student' : 'Teacher'}
-                            </Button>
-                        </div>
-                    </div>
-                )}
-
-                {/* User Search and Selection */}
-                {subOption === 'specific' && (
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-semibold text-gray-800">Select {recipientType === 'students' ? 'Student' : 'Teacher'}</h2>
+                        <h2 className="text-xl font-semibold text-gray-800">
+                            {recipientType === 'all' ? 'Select User' : 'Select Teacher'} (Optional)
+                        </h2>
                         <Input
                             type="text"
-                            value={selectedUser}
+                            value={selectedSpecific}
                             onChange={(e) => handleUserSelection(e.target.value)}
                             list="user-options"
                             className="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-gray-700"
-                            placeholder={`Search ${recipientType === 'students' ? 'Student' : 'Teacher'} by name`}
+                            placeholder={`Search ${recipientType === 'all' ? 'User' : 'Teacher'} by name`}
                         />
                         <datalist id="user-options">
-                            {(recipientType === 'students' ? students : teachers).map((user) => (
+                            {(recipientType === 'all' ? users : teachers).map((user) => (
                                 <option key={user} value={user} />
                             ))}
                         </datalist>
                     </div>
                 )}
 
-                {/* Notification Title and Message */}
                 <div className="space-y-4">
                     <label className="block text-lg font-semibold text-gray-800" htmlFor="title">
                         Notification Title
@@ -178,9 +133,8 @@ const AdminPushNotificationPage: React.FC = () => {
                 <Button
                     onClick={sendNotification}
                     disabled={isLoading}
-                    className={`w-full py-3 mt-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors ${
-                        isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
+                    className={`w-full py-3 mt-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
                 >
                     {isLoading ? 'Sending...' : 'Send Notification'}
                 </Button>

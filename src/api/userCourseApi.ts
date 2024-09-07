@@ -4,6 +4,7 @@ import { PROFILE_ENDPOINT } from '../utils/constants';
 import axiosInstance from './axiosInstance'; // Make sure axiosInstance is properly configured
 import { courseListingDTO } from "../types/courseListingDTO";
 import { ICourse } from "../types/CourseTypes";
+import { Course } from '../pages/Users/Bookmarks';
 
 // Add a new course for a user
 export const addUserCourse = async (data: object): Promise<any> => {
@@ -99,3 +100,27 @@ export const coursesPurchased = async (): Promise<Purchase[]> => {
 //     success: boolean;
 //     message: string;
 //   }
+
+export const saveCourseToWishlist = async (courseId: string): Promise<void> => {
+    const response = await axiosInstance.post(`${PROFILE_ENDPOINT}/wishlist/save`, { courseId });
+    return response.data;
+};
+
+export const unsaveCourseFromWishlist = async (courseId: string): Promise<void> => {
+    const response = await axiosInstance.delete(`${PROFILE_ENDPOINT}/wishlist/unsave/${courseId}`);
+    return response.data;
+};
+
+
+
+export const wishlistlistCourses = async (): Promise<Course[]> => {
+    // return mockBookmarkedCourses; 
+    const response = await axiosInstance.get(`${PROFILE_ENDPOINT}/allbookmark`);
+    return response.data;
+};
+
+export const removePurchasedItemsFromWishlist = async (): Promise<Course[]> => {
+    // return mockBookmarkedCourses; 
+    const response = await axiosInstance.delete(`${PROFILE_ENDPOINT}/allbookmark`);
+    return response.data;
+};

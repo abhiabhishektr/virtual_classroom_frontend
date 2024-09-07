@@ -17,7 +17,7 @@ const GroupList: React.FC<GroupListProps> = ({
   setSelectedGroup,
 }) => {
   return (
-    <div className="w-full md:w-1/3 lg:w-1/4 xl:w-1/5 2xl:w-1/6 bg-gray-200 text-gray-800 p-4 flex flex-col rounded-lg shadow-md">
+    <div className="w-full h-[87vh] bg-gray-200 text-gray-800 p-4 flex flex-col rounded-lg shadow-md">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold">Chats</h2>
         <div className="flex items-center">

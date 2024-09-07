@@ -9,6 +9,7 @@ import uploadImage from "../../libraries/uploadImage";
 import axios from 'axios';
 import ChangePasswordPopup from './ChangePasswordPopup';
 import { Input } from '../ui/input';
+import { motion } from 'framer-motion';
 
 const PersonalDetails: React.FC = () => {
   const dispatch = useDispatch();
@@ -124,9 +125,21 @@ const PersonalDetails: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto rounded-xl bg-white shadow-md p-8">
-      <h2 className="text-2xl font-bold mb-4">Personal Details</h2>
-
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="w-full max-w-md mx-auto rounded-xl bg-gradient-to-r from-blue-100 to-purple-100 shadow-lg p-8"
+    >
+      <motion.h2
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="text-2xl font-bold mb-4 text-blue-600"
+      >
+        Personal Details
+      </motion.h2>
+  
       {croppingImage ? (
         <ImageCropper
           image={croppingImage}
@@ -181,16 +194,21 @@ const PersonalDetails: React.FC = () => {
           )}
         </div>
       )}
-
+  
       {imageChanged && (
         <div className="mt-2 text-center">
-          <button onClick={handleChangeImage} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          <button onClick={handleChangeImage} className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md">
             Save Image
           </button>
         </div>
       )}
-
-      <div className="mb-4">
+  
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="mb-4"
+      >
         <label className="block text-sm font-medium text-gray-700">Name</label>
         {isEditing ? (
           <Input
@@ -198,17 +216,27 @@ const PersonalDetails: React.FC = () => {
             name="name"
             value={editedName}
             onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 block w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />
         ) : (
           <p className="mt-1">{name}</p>
         )}
-      </div>
-      <div className="mb-4">
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
+        className="mb-4"
+      >
         <label className="block text-sm font-medium text-gray-700">Email</label>
         <p className="mt-1">{email}</p>
-      </div>
-      <div className="mb-4">
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+        className="mb-4"
+      >
         <label className="block text-sm font-medium text-gray-700">Phone</label>
         {isEditing ? (
           <Input
@@ -216,33 +244,38 @@ const PersonalDetails: React.FC = () => {
             name="phone"
             value={editedPhone}
             onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 block w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />
         ) : (
           <p className="mt-1">{phone}</p>
         )}
-      </div>
-      <div className="mt-6 flex justify-between">
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.7 }}
+        className="mt-6 flex justify-between"
+      >
         {isEditing ? (
-          <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 rounded-md">Save</button>
+          <button onClick={handleSave} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">Save</button>
         ) : (
-          <button onClick={() => setIsEditing(true)} className="bg-blue-500 text-white px-4 py-2 rounded-md">Edit</button>
+          <button onClick={() => setIsEditing(true)} className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md">Edit</button>
         )}
         <button
           onClick={handleChangePassword}
-          className="bg-yellow-500 text-white px-4 py-2 rounded-md"
+          className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md"
         >
           Change Password
         </button>
-      </div>
-
+      </motion.div>
+  
       {isChangePasswordOpen && (
         <ChangePasswordPopup
           visible={isChangePasswordOpen}
           setVisible={setIsChangePasswordOpen}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 

@@ -6,12 +6,15 @@ import SortBy from '../../components/Shared/SortBy';
 import SearchBar from '../../components/Shared/SearchBar';
 import Pagination from '../../components/Shared/Pagination';
 import { getUserCourses } from '../../api/userCourseApi';
+import { motion ,AnimatePresence } from 'framer-motion';
+
 import { courseListingDTO as Course } from '../../types/courseListingDTO';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../redux/slices/profileSlice';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Filter from '../../components/Profile/Filter';
+// import FeaturedCoursesBanner from '../../components/user/FeaturedCoursesBanner';
 
 // Define the type for the filters state
 
@@ -50,6 +53,11 @@ const CourseListing: React.FC = () => {
     [dispatch, category, priceRange]
   );
 
+  const handleBookmarkChange = (courseId: string, isBookmarked: boolean) => {
+    setFilteredCourses(filteredCourses.map(course =>
+      course.id === courseId ? { ...course, isBookmarked } : course
+    ));
+  };
 
   useEffect(() => {
     fetchCourses(searchTerm, sortOption, currentPage, showMyLearnings);
@@ -82,13 +90,24 @@ const CourseListing: React.FC = () => {
 
   return (
     <div className="p-6 grid lg:grid-cols-6 gap-4">
-      {/* Left Sidebar for Filters */}
-      <div className="lg:col-span-1">
+  
+      {/* <FeaturedCoursesBanner/> */}
+  
+      <motion.div 
+        className="lg:col-span-1"
+        initial={{ x: -50, opacity: 0 }} 
+        animate={{ x: 0, opacity: 1 }} 
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
         <Filter onFilterChange={handleFilterChange} />
-      </div>
-
-      {/* Main Content for Course Listing */}
-      <div className="lg:col-span-5">
+      </motion.div>
+  
+      <motion.div 
+        className="lg:col-span-5"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }} 
+      > 
         <div className="flex justify-between items-center mb-6">
           <div className="w-64">
             <SearchBar onSearch={handleSearch} />
@@ -117,23 +136,45 @@ const CourseListing: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {loadingSkeleton ? (
-            Array.from({ length: coursesPerPage }).map((_, index) => (
-              <Skeleton key={index} height={150} width="100%" />
-            ))
-          ) : (
-            currentCourses.map(course => <CourseCard key={course.id} course={course} />)
-          )}
-        </div>
-        <div className="mt-8">
-          <Pagination
+  
+        <AnimatePresence>
+          <motion.div 
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.3, staggerChildren: 0.1 }}
+          >
+            {loadingSkeleton ? (
+              Array.from({ length: coursesPerPage }).map((_, index) => (
+                <Skeleton key={index} height={150} width="100%" />
+              ))
+            ) : (
+              currentCourses.map(course => (
+                <motion.div key={course.id}> 
+                  <CourseCard
+                    course={course}
+                    onBookmarkChange={handleBookmarkChange}
+                  />
+                </motion.div>
+              ))
+            )}
+          </motion.div>
+        </AnimatePresence>
+  
+        <motion.div 
+          className="mt-8"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <Pagination 
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={page => setCurrentPage(page)}
           />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div> 
     </div>
   );
 };

@@ -1,3 +1,5 @@
+// src/App.tsx
+
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -7,6 +9,7 @@ import AppRoutes from './routes/AppRoutes';
 import Navbar from './components/Shared/Navbar';
 import AdminRoutes from './routes/AdminRoutes';
 import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from './components/Shared/Loader';
 // import SocketInitializer from './components/Socket/SocketInitializer';
@@ -42,6 +45,7 @@ const AppContent: React.FC = () => {
   return (
     <>
       <ToastContainer />
+      <Toaster />
       {isLoading && <Loader />}
       {shouldShowNavbar && <Navbar />}
       <Routes>
@@ -63,16 +67,20 @@ const AppContent: React.FC = () => {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { SocketProvider } from './context/SocketContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 const App: React.FC = () => {
+
   const queryClient = new QueryClient();
   return (
     <Router>
       <QueryClientProvider client={queryClient}>
-        <SocketProvider>
-          <AppContent />
-          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-        </SocketProvider>
+        <ThemeProvider>
+          <SocketProvider>
+            <AppContent />
+            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+          </SocketProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     </Router>
   );

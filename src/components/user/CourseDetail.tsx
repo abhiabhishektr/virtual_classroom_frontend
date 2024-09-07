@@ -14,6 +14,7 @@ import { StarIcon as SolidStarIcon } from '@heroicons/react/24/solid';
 import RatingAndReview from './RatingAndReview';
 import { markContentCompleted, markContentImportant, unmarkContentCompleted, unmarkContentImportant } from '../../api/user/userProgressApi';
 import { showToast } from '../../utils/toast';
+import SaveButton from './SaveButton';
 
 
 const CourseDetail: React.FC = () => {
@@ -142,6 +143,7 @@ const CourseDetail: React.FC = () => {
 
     return (
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+           
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 {/* Course Title and Basic Info */}
                 <motion.div
@@ -191,7 +193,13 @@ const CourseDetail: React.FC = () => {
 
                         {/* Course Details */}
                         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+                            <div className='flex justify-between items-center mb-2'>
                             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Course Details</h2>
+                            {!course.isPurchased && (
+                                <SaveButton courseId={course._id} />
+                            )}
+                            
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {[
                                     { label: "Instructor", value: course.instructorName },
@@ -273,7 +281,7 @@ const CourseDetail: React.FC = () => {
 
 
                         <div ref={ref}>
-                            {isInView && <RatingAndReview  isPurchased={course.isPurchased } />}
+                            {isInView && <RatingAndReview isPurchased={course.isPurchased} />}
                         </div>
 
                     </motion.div>

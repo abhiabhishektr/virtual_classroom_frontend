@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { useSocket } from '../../context/SocketContext';
 import DotPattern from '../magicui/dot-pattern';
 import { cn } from '../../lib/utils';
+import { FaArrowLeft } from 'react-icons/fa';
 
 interface Message {
   sender_id: string;
@@ -16,13 +17,15 @@ interface ChatWindowProps {
   selectedGroup: { groupId: string; groupName: string; teacherEmail: string } | null;
   currentUsername: string;
   currentName: string;
+  goBack:()=>void
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({
   messages,
   selectedGroup,
   currentUsername,
-  currentName
+  currentName,
+  goBack
 }) => {
   const [newMessage, setNewMessage] = useState<string>('');
   const [showScrollButton, setShowScrollButton] = useState<boolean>(false);
@@ -85,7 +88,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     <div className='h-full w-screen'>
       <div className="flex-1 flex flex-col bg-gray-100 rounded-lg shadow-md h-[87vh]">
         <div className="bg-zinc-700 p-4 text-white flex items-center rounded-t-lg z-10">
-          <h2 className="text-xl font-bold">{selectedGroup?.groupName || 'Select a group'}</h2>
+        <FaArrowLeft className='cursor-pointer' onClick={goBack}/>
+          <h2 className="text-xl font-bold ms-4">{selectedGroup?.groupName || 'Select a group'}</h2>
         </div>
         <div
           ref={chatContainerRef}
@@ -122,7 +126,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <div className="absolute bottom-24 right-4">
             <Button
               onClick={handleScrollToBottom}
-              className="p-2 bg-sky-950 rounded-full hover:bg-zinc-600 transition-colors duration-200"
+              className="p-2 bg-sky-950 rounded-full hover:bg-zinc-600 transition-colors duration-200 absolute bottom-0 right-0 z-30"
             >
               <svg
                 className="w-6 h-6 text-white"

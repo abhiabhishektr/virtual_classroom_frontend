@@ -11,3 +11,5 @@ export default defineConfig({
     },
   },
 })
+
+// yarn add vite@^5.3.1

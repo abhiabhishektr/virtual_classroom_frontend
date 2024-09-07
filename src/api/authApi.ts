@@ -1,6 +1,6 @@
 // src/api/authApi.ts
 import axiosInstance from './axiosInstance';
-import { AUTH_ENDPOINT } from '../utils/constants';
+import { AUTH_ENDPOINT ,PROFILE_ENDPOINT} from '../utils/constants';
 // import { ErrorResponse } from '../utils/constants';
 
 interface RegisterUserInput {
@@ -92,11 +92,11 @@ export const forgotPassword = async (email: string, password: string, otp: strin
 
 export const signOut = async (): Promise<any> => {
   try {
-    const response = await axiosInstance.post(`${AUTH_ENDPOINT}//logout`);
-    console.log('Login successful:', response);
+    const response = await axiosInstance.post(`${PROFILE_ENDPOINT}/logout`);
+    console.log('logout successful:', response);
     return response; // Assuming backend sends back some data on successful login
   } catch (error) {
-    console.error('Login failed:', error);
+    console.error('logout failed:', error);
     throw error;
   }
 };
