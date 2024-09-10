@@ -18,6 +18,7 @@ const SocketInitializer: React.FC = () => {
         dispatch(removeSocket());
       };
     }
+    return
   }, [dispatch, isAuthenticated]);
 
   return null;

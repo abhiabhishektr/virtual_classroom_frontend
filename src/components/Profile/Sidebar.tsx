@@ -4,13 +4,8 @@ import { useAuth } from "../../hooks/useAuth";
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { signOut } from '../../api/authApi';
-import { FiX } from 'react-icons/fi';
 
-interface SidebarProps {
-  toggleSidebar: () => void;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
+const Sidebar: React.FC = () => {
   const navigate = useNavigate(); 
   const { logout } = useAuth();
   const { role, profilePicture, name } = useSelector((state: RootState) => state.profile);
@@ -28,9 +23,9 @@ const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
     location.pathname === path ? 'text-gray-700 bg-gray-100' : 'text-gray-700 hover:bg-gray-100';
 
   return (
-    <aside className="w-72 bg-white border-r border-gray-200 shadow-xl h-full overflow-y-auto">
-      <div className="flex flex-col h-full">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+    <aside className="w-72 bg-white  border-r border-gray-200 shadow-xl fixed h-full">
+      <div className="flex flex-col  ">
+        <div className="p-6 border-b border-gray-200">
           <div className="flex items-center space-x-4">
             {profilePicture ? (
               <img
@@ -48,36 +43,34 @@ const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
               <p className="text-lg font-semibold text-gray-800">{name}</p>
             </div>
           </div>
-          <button className="md:hidden" onClick={toggleSidebar}>
-            <FiX size={24} />
-          </button>
         </div>
         <nav className="flex-grow py-6 px-4 space-y-1">
-          <Link to="/profile" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile')}`} onClick={toggleSidebar}>
+          <Link to="/profile" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile')}`}>
             Overview
           </Link>
-          <Link to="/profile/edit-profile" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/edit-profile')}`} onClick={toggleSidebar}>
+          <Link to="/profile/edit-profile" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/edit-profile')}`}>
             Profile Management
           </Link>
-          <Link to="/profile/teacher-registration" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/teacher-registration')}`} onClick={toggleSidebar}>
+          <Link to="/profile/teacher-registration" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/teacher-registration')}`}>
             Register as Teacher
           </Link>
-          <Link to="/profile/purchase-history" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/purchase-history')}`} onClick={toggleSidebar}>
+          <Link to="/profile/purchase-history" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/purchase-history')}`}>
             Purchase history
           </Link>
-          <Link to="/profile/notifications" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/notifications')}`} onClick={toggleSidebar}>
+          <Link to="/profile/notifications" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/notifications')}`}>
             Notifications
           </Link>
           {role === 'teacher' && (
-            <Link to="/profile/course-list" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/course-list')}`} onClick={toggleSidebar}>
+            <Link to="/profile/course-list" className={`flex items-center px-4 py-3 rounded-lg font-medium ${getNavLinkClass('/profile/course-list')}`}>
               Course List
             </Link>
           )}
+
         </nav>
         <div className="p-4 border-t border-gray-200">
           <button
             onClick={handleLogout}
-            className="flex items-center px-4 py-3 text-red-600 hover:bg-gray-100 rounded-lg font-medium transition duration-150 ease-in-out w-full"
+            className="flex items-center px-4 py-3 text-red-600 hover:bg-gray-100 rounded-lg font-medium transition duration-150 ease-in-out"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -85,6 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
             Sign Out
           </button>
         </div>
+
       </div>
     </aside>
   );
