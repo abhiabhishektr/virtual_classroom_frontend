@@ -32,7 +32,7 @@ export const useAuth = () => {
     checkAuthTokens();
   };
 
-  const setadminLogin = (accessToken: string, refreshToken: string) => {
+  const setAdminLogin = (accessToken: string, refreshToken: string) => {
     localStorage.setItem('adminToken', accessToken);
     Cookies.set('refreshToken', refreshToken, { secure: true, httpOnly: true });
     dispatch(setAuthToken(accessToken));  // Update Redux store
@@ -41,16 +41,16 @@ export const useAuth = () => {
   };
 
   const logout = () => {
-    localStorage.clear();
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    Cookies.remove('refreshToken');
     dispatch(setAuthToken(null));  // Update Redux store
     dispatch(resetAuthState());   // Clear auth state
     dispatch(resetProfileState()); // Clear profile state
-    Cookies.remove('refreshToken');
-    localStorage.removeItem('reduxState')
     checkAuthTokens();
   };
 
-  const adminlogout = () => {
+  const adminLogout = () => {
     localStorage.removeItem('adminToken');
     Cookies.remove('refreshToken');
     dispatch(setAuthToken(null));  // Update Redux store
@@ -59,11 +59,11 @@ export const useAuth = () => {
 
   return {
     isAuthenticated: !!authToken,
-    isAdminAuthenticated: !!authToken, // Update according to your admin auth logic
+    isAdminAuthenticated: !!localStorage.getItem('adminToken'),
     login,
     logout,
-    setadminLogin,
-    adminlogout,
+    setAdminLogin,
+    adminLogout,
     checkAuthTokens
   };
 };

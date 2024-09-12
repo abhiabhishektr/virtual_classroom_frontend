@@ -8,7 +8,7 @@ const loadInitialState = () => {
   try {
     const serializedState = localStorage.getItem('reduxState');
     if (serializedState) {
-      return JSON.parse(serializedState);
+      return JSON.parse(serializedState) as RootState;
     }
   } catch (e) {
     console.error('Failed to load Redux state from localStorage:', e);

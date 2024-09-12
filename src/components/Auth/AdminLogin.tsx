@@ -12,7 +12,7 @@ const AdminLogin: React.FC = () => {
   const [commonerror, setCommonError] = useState<string | null>(null);
 
   const navigate = useNavigate();
-  const { setadminLogin } = useAuth(); 
+  const { setAdminLogin } = useAuth(); 
 
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -31,7 +31,7 @@ const AdminLogin: React.FC = () => {
     try {
       const response = await adminLogin(username, password);
       if (response) {
-        setadminLogin(response.tokens.accessToken, response.tokens.refreshToken);
+        setAdminLogin(response.tokens.accessToken, response.tokens.refreshToken);
         navigate('/admin/');
       }
     } catch (error) {

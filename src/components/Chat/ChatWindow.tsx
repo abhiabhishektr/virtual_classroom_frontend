@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { useSocket } from '../../context/SocketContext';
+import { useSocket } from '../../hooks/useSocket'; 
 import DotPattern from '../magicui/dot-pattern';
 import { cn } from '../../lib/utils';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -46,13 +46,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     const handleScroll = () => {
       checkIfAtBottom();
     };
-
-    chatContainerRef.current?.addEventListener('scroll', handleScroll);
-
+  
+    const chatContainer = chatContainerRef.current; // Copy the ref to a local variable
+  
+    chatContainer?.addEventListener('scroll', handleScroll);
+  
     return () => {
-      chatContainerRef.current?.removeEventListener('scroll', handleScroll);
+      chatContainer?.removeEventListener('scroll', handleScroll); // Use the local variable in cleanup
     };
   }, []);
+  
 
   useEffect(() => {
     if (isAtBottom && chatContainerRef.current) {

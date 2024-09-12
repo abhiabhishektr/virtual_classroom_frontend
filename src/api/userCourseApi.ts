@@ -13,7 +13,6 @@ export const addUserCourse = async (data: object): Promise<any> => {
             'Content-Type': 'multipart/form-data',
         },
     });
-    console.log(response.data);
     return response.data;
 };
 
@@ -50,8 +49,6 @@ export const getUserCourses = async (
     category?: string,
     priceRange?: string
 ): Promise<any> => {
-    console.log('Category:', category);
-    console.log('Price Range:', priceRange);
 
     if (showMyLearnings) {
         const response = await axiosInstance.get<courseListingDTO[]>(`${PROFILE_ENDPOINT}/user-courses`);

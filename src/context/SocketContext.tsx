@@ -1,16 +1,17 @@
 // src/context/SocketContext.tsx
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { showHotToast } from '../utils/hotToast';
+import { API_BASE_URL } from '../utils/constants';
 
 
-interface SocketContextProps {
+export interface SocketContextProps {
   socket: Socket | null;
 }
 
-const SocketContext = createContext<SocketContextProps>({ socket: null });
+export const SocketContext = createContext<SocketContextProps>({ socket: null });
 
-export const useSocket = () => useContext(SocketContext);
+// export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -20,7 +21,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     if (token) {
 
-      const newSocket = io('http://localhost:5000', {
+      const newSocket = io(API_BASE_URL, {
         auth: { token },
       });
       setSocket(newSocket);
@@ -43,6 +44,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         newSocket.disconnect();
       };
     }
+    return () => {}; 
   }, []);
 
   return (

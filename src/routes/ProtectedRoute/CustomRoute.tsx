@@ -6,8 +6,11 @@ const isAuthenticated = (): boolean => {
   return !!localStorage.getItem('authToken');
 };
 
+// Exclude problematic properties from RouteProps
+type CustomRouteProps = Omit<RouteProps, 'element' | 'children'>;
+
 // Type definition for the props
-interface ProtectedRouteProps extends RouteProps {
+interface ProtectedRouteProps extends CustomRouteProps {
   element: React.ComponentType<any>;
 }
 

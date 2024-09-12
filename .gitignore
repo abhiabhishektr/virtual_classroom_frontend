@@ -25,6 +25,6 @@ dist-ssr
 file.md
 src/Testing
 color.png
-
+file2.md
 
 # rm -f .git/index.lock

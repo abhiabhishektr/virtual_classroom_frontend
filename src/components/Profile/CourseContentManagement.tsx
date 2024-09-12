@@ -88,7 +88,7 @@ const CourseContentManagement: React.FC<CourseContentManagementProps> = ({ chapt
             if (!courseId || !moduleId) {
                 throw new Error('Course ID or Module ID is missing');
             }
-           const res = await uploadContent(courseId, moduleId, chapterId, newContent);
+           const res = await uploadContent(courseId, chapterId, newContent);
            setChapters(res.modules)
         } catch (error) {
             console.error('Failed to upload content:', error);

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import CourseRegistrationForm from '../../components/Profile/CourseRegistrationForm';
-import { CourseData } from '../../types/CourseTypes'; // Assuming you've moved the interfaces to a separate file
+import {  CourseSubmissionData } from '../../types/CourseTypes'; // Assuming you've moved the interfaces to a separate file
 import { addCourse } from '../../api/teacher/courseApi'; // Import the addCourse API function
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../redux/slices/profileSlice';
@@ -11,7 +11,7 @@ import { showToast } from '../../utils/toast';
 
 const CourseRegistration: React.FC = () => {
   const dispatch = useDispatch();
-  const handleSubmit = async (data: CourseData) => {
+  const handleSubmit = async (data: CourseSubmissionData) => {
     try {
       console.log("data", data);
       dispatch(setLoading(true));

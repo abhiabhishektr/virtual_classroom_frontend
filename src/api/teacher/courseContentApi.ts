@@ -34,7 +34,6 @@ export const updateModule = async (chapterId: string, courseId: string, moduleId
 
 // Function to delete a module by ID
 export const deleteModule = async (moduleId: string, courseId: string, chapterId: string): Promise<any> => {
-    console.log(`courseId: ${courseId}, moduleId: ${moduleId}, chapterId: ${chapterId}`);
 
     const response = await axiosInstance.delete(`${TEACHER_ENDPOINT}/modules/${chapterId}`, {
         data: { moduleId, courseId },
@@ -44,7 +43,6 @@ export const deleteModule = async (moduleId: string, courseId: string, chapterId
 
 // Function to delete a module by ID
 // export const renameModule = async (moduleId: string, courseId: string, chapterId: string): Promise<any> => {
-//     console.log(`courseId: ${courseId}, moduleId: ${moduleId}, chapterId: ${chapterId}`);
 
 //     const response = await axiosInstance.put(`${TEACHER_ENDPOINT}/modules/${chapterId}`, {
 //         data: { moduleId, courseId },
@@ -67,7 +65,7 @@ export const updateContent = async (chapterId: string, contentId: string, course
 
 // working
 
-export const uploadContent = async (courseId: string, moduleId: string, chapterId: string, content: IContent) => {
+export const uploadContent = async (courseId: string, chapterId: string, content: IContent) => {
     try {
 
         const formData = new FormData();
@@ -77,18 +75,12 @@ export const uploadContent = async (courseId: string, moduleId: string, chapterI
         formData.append('type', content.type);
         formData.append('title', content.title);
 
-        // Logging FormData contents (for debugging, this may need adjustments)
-        formData.forEach((value, key) => {
-            console.log(`FormData Key: ${key}, Value:`, value);
-        });
-
         const response = await axiosInstance.post(`${TEACHER_ENDPOINT}/content/${courseId}/modules/${chapterId}/contents`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         });
 
-        console.log('Upload successful:', response.data); // Debug log
         return response.data;
     } catch (error: any) {
         console.error('Error during upload:', error.message); // Error log

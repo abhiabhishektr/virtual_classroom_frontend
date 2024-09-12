@@ -2,7 +2,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '../../utils/constants';
 
 const adminAxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/`,
   // timeout: 10000, // Optional: set timeout for each request
 });
 

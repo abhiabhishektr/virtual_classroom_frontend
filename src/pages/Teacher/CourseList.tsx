@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from '../../redux/slices/profileSlice';
 import { RootState } from '../../redux/store';
 import { JitsiMeeting } from '@jitsi/react-sdk';
-import { useSocket } from '../../context/SocketContext';
+import { useSocket } from '../../hooks/useSocket'; 
 
 interface Course {
   id: string;

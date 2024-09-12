@@ -176,7 +176,7 @@ const CourseRegistrationForm: React.FC<CourseRegistrationFormProps> = ({
                     type="file"
                     onChange={handleChangeImage}
                     className="text-sm text-gray-500"
-                    disabled={mode === 'edit' && nonEditableFields.includes('image')}
+                    disabled={mode === 'edit' && nonEditableFields.includes('imageUrl')}
                   />
                 </div>
               </div>

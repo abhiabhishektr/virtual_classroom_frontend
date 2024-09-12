@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { showToast } from '../utils/toast';
+import { API_BASE_URL } from '../utils/constants';
 
 
 const Login: React.FC = () => {
@@ -11,16 +12,14 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
     const login = useGoogleLogin({
         onSuccess: async (codeResponse) => {
-            console.log("Login Success:", codeResponse);
 
             try {
-                const response = await axios.post('http://localhost:5000/api/auth/google/callback', {
+                const response = await axios.post(`${API_BASE_URL}/api/auth/google/callback`, {
                     code: codeResponse.code
                 }, {
                     headers: { 'Content-Type': 'application/json' }
                 });
 
-                console.log("Backend response:", response.data);
                 if (response && response.data) {
                     await loginWithAuth(response.data.token.accessToken, response.data.token.refreshToken);
                     showToast(' Login Successful', 'success');

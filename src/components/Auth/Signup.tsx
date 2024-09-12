@@ -1,5 +1,5 @@
 // src/components/Auth/Signup.tsx
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { useState, ChangeEvent, FormEvent, KeyboardEvent ,useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import img from '../../assets/images/img';
 import { registerUser, sendEmailForOTP, reSendOTP } from '../../api/authApi';
@@ -34,6 +34,18 @@ const Signup: React.FC = () => {
   const [passwordError, setPasswordError] = useState<string>("");
   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
 
+
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
+    const { key } = e;
+
+    if (key === 'Backspace' && otp[index] === '') {
+      e.preventDefault();
+      if (index > 0) {
+        (document.getElementById(`otp-${index - 1}`) as HTMLInputElement).focus();
+      }
+    }
+  }
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setName(value);
@@ -87,7 +99,6 @@ const Signup: React.FC = () => {
     try {
       dispatch(setLoading(true));
       const res = await sendEmailForOTP(email);
-      console.log('res', res);
 
       if (res && res.message === 'User already exists') {
 
@@ -95,7 +106,6 @@ const Signup: React.FC = () => {
         return;
       }
 
-      console.log('Email sent successfully');
       setShowSignupForm(false);
       setShowOtpForm(true);
       setTimer(120);
@@ -137,7 +147,6 @@ const Signup: React.FC = () => {
       dispatch(setLoading(true));
       await handleRegisterUser();
     } catch (error) {
-      console.log(1);
 
       console.error('Error verifying OTP:', (error as Error).message);
       showToast('Error verifying OTP. Please try again.', 'error');
@@ -169,16 +178,13 @@ const Signup: React.FC = () => {
         showToast('Invalid OTP', 'error');
         return
       }
-      console.log('User registered successfully');
 
       login(res.tokens.accessToken, res.tokens.refreshToken);
       setTimeout(() => {
         navigate('/');
       }, 1000);
     } catch (error: any) {
-      console.log('error', error);
 
-      console.log(122);
 
 
       console.error('Error registering user:', error.message);
@@ -210,7 +216,6 @@ const Signup: React.FC = () => {
     }
     return () => clearInterval(interval);
   }, [timer]);
-
 
 
   return (
@@ -318,6 +323,7 @@ const Signup: React.FC = () => {
                       id={`otp-${index}`}
                       value={value}
                       onChange={(e) => handleOtpChange(e, index)}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
                       maxLength={1}
                       className="w-9 h-9 text-center rounded-md border border-gray-300 bg-white text-gray-900 outline-none focus:border-blue-500"
                     />

@@ -1,7 +1,8 @@
 // src/api/socket.ts
 import { io, Socket } from 'socket.io-client';
+import { API_BASE_URL } from '../utils/constants';
 
-const socket: Socket = io('http://localhost:5000', {
+const socket: Socket = io(API_BASE_URL, {
   auth: {
     token: localStorage.getItem('authToken'), // Pass the token
   },

@@ -15,7 +15,7 @@ interface IChapter {
 interface ApiIContent {
     title: string;
     courseId: string;
-    modules: IChapter
+    modules: IChapter[]
     moduleId: string
     
 }

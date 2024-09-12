@@ -16,7 +16,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ role }) => {
     const [error, setError] = useState<string | null>(null);
 
     const navigate = useNavigate();
-    const { login, setadminLogin } = useAuth();
+    const { login, setAdminLogin } = useAuth();
 
     const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
@@ -40,7 +40,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ role }) => {
             } else if (role === 'admin') {
                 const response = await adminLogin(username, password);
                 if (response) {
-                    setadminLogin(response.tokens.accessToken, response.tokens.refreshToken);
+                    setAdminLogin(response.tokens.accessToken, response.tokens.refreshToken);
                     navigate('/admin/');
                 }
             }

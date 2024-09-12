@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import  { useState, ChangeEvent, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import img from '../../assets/images/img';
 import { forgotPassword, forgotPasswordOTP } from '../../api/authApi';
@@ -19,10 +19,14 @@ const ForgotPassword = () => {
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState({});
+  
+    interface Errors {
+      common?: string; 
+      password?: string;
+    }
+    
+  const [errors, setErrors] = useState<Errors>({});
   const [mainerrors, setMainerrors] = useState(false);
-
-
 
 
 
@@ -32,7 +36,7 @@ const ForgotPassword = () => {
   };
 
 
-  const handleEmailSubmit = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleEmailSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors({});
     try {
@@ -53,7 +57,7 @@ const ForgotPassword = () => {
     }
   };
 
-  const handleOtpSubmit = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleOtpSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors({});
     if (newPassword !== confirmPassword) {

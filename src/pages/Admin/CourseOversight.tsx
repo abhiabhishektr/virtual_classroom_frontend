@@ -55,7 +55,7 @@ const AdminCourseList = () => {
   }
 
   return (
-    <div className='h-[87vh] w-full overflow-y-auto'>
+    <div className='h-full w-full overflow-y-auto'>
       <div className="max-w-6xl mx-auto mt-10 p-4 bg-gray-50">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">Manage Courses</h2>
 

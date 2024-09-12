@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSocket } from '../../context/SocketContext';
+import { useSocket } from '../../hooks/useSocket'; 
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Input } from '../../components/ui/input';

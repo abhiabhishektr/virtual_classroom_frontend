@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getGroup, getMessagesForGroup } from '../../api/chat/chatApi';
 import ChatPageComponent from '../../components/Chat/ChatPageComponet';
 import { IGroup, IMessage } from '../../types/chat';
-import { useSocket } from '../../context/SocketContext';
+import { useSocket } from '../../hooks/useSocket'; 
 
 const ChatPage: React.FC = () => {
   const [groups, setGroups] = useState<IGroup[]>([]);
@@ -16,8 +16,10 @@ const ChatPage: React.FC = () => {
       try {
         const groupData = await getGroup();
         setGroups(groupData);
-        if (groupData.length > 0) {
+        if (groupData.length > 0 && groupData[0]) {
           setSelectedGroup(groupData[0]);
+        } else {
+          setSelectedGroup(null);  
         }
       } catch (error) {
         console.error("Error fetching groups:", error);
@@ -47,8 +49,6 @@ const ChatPage: React.FC = () => {
 
       // Listen for new messages
       socket.on('message', (newMessage: IMessage) => {
-
-        // Add the test message to the state
         setMessages(prevMessages => [...prevMessages, newMessage]);
       });
 
@@ -57,6 +57,7 @@ const ChatPage: React.FC = () => {
         socket.off('message');
       };
     }
+    return undefined; // Returning undefined when there's no cleanup to perform
   }, [selectedGroup, socket]);
 
   const handleGroupSelect = (group: IGroup) => {

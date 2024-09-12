@@ -1,7 +1,7 @@
 // src/utils/constants.ts
 
 // API Endpoints
-export const API_BASE_URL = "http://localhost:5000/";
+export const API_BASE_URL = "http://localhost:5000";
 // export const API_BASE_URL = "https://g37bwctb-5000.inc1.devtunnels.ms/";
 export const AUTH_ENDPOINT = "/api/auth";
 export const TEACHER_ENDPOINT = "/api/teacher";
@@ -23,58 +23,58 @@ export interface ErrorResponse {
     response: {
         data: unknown;
     };
-  }
-  
+}
+
 
 
 // ------------------------ Admin --------------------------
 
 
 export const constants = {
-  // Default values for images and data
-  defaultAvatarUrl: 'https://www.example.com/default-avatar.png',
-  level: 'Beginner', // You can set this based on the course level
-  language: 'English', // Default language
-  instructorBio: 'This is a brief bio about the instructor. It could include their background, experience, and teaching philosophy.',
-  features: [
-      'Lifetime access to course materials',
-      'Interactive quizzes and assignments',
-      'Certificate of completion',
-      '24/7 community support',
-  ],
-  placeholderSections: [
-      {
-          title: 'Introduction',
-          items: [
-              'Welcome to the course',
-              'What you will learn',
-              'Course overview',
-          ],
-      },
-      {
-          title: 'Module 1: Basics',
-          items: [
-              'Introduction to the basics',
-              'Basic concepts and definitions',
-              'Simple examples',
-          ],
-      },
-      {
-          title: 'Module 2: Intermediate',
-          items: [
-              'Advanced topics and techniques',
-              'Intermediate examples and exercises',
-              'Additional resources',
-          ],
-      },
-      {
-          title: 'Module 3: Advanced',
-          items: [
-              'Expert-level content',
-              'Complex problems and solutions',
-              'Final project',
-          ],
-      },
-  ],
+    // Default values for images and data
+    defaultAvatarUrl: 'https://www.example.com/default-avatar.png',
+    level: 'Beginner', // You can set this based on the course level
+    language: 'English', // Default language
+    instructorBio: 'This is a brief bio about the instructor. It could include their background, experience, and teaching philosophy.',
+    features: [
+        'Lifetime access to course materials',
+        'Interactive quizzes and assignments',
+        'Certificate of completion',
+        '24/7 community support',
+    ],
+    placeholderSections: [
+        {
+            title: 'Introduction',
+            items: [
+                'Welcome to the course',
+                'What you will learn',
+                'Course overview',
+            ],
+        },
+        {
+            title: 'Module 1: Basics',
+            items: [
+                'Introduction to the basics',
+                'Basic concepts and definitions',
+                'Simple examples',
+            ],
+        },
+        {
+            title: 'Module 2: Intermediate',
+            items: [
+                'Advanced topics and techniques',
+                'Intermediate examples and exercises',
+                'Additional resources',
+            ],
+        },
+        {
+            title: 'Module 3: Advanced',
+            items: [
+                'Expert-level content',
+                'Complex problems and solutions',
+                'Final project',
+            ],
+        },
+    ],
 };
 

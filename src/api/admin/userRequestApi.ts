@@ -27,7 +27,6 @@ export const updateTeacherRequestStatus = async (id: string, status: 'approved' 
 // Delete teacher request
 export const deleteTeacherRequest = async (id: string) => {
   const response = await adminAxiosInstance.delete(`${ADMIN_ENDPOINT}/teacher-requests/${id}`);
-  console.log('Respossssnse:', response);
   
   return response;
 };

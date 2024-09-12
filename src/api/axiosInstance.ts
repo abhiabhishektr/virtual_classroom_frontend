@@ -5,7 +5,7 @@ import axiosRetry from 'axios-retry';
 import { API_BASE_URL } from '../utils/constants';
 
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/`,
   withCredentials: true,
 });
 
@@ -16,8 +16,7 @@ axiosRetry(axiosInstance, {
 
 const refreshToken = async () => {
   const refreshToken = localStorage.getItem('refreshToken');
-  const response = await axios.post(`${API_BASE_URL}api/auth/refresh-token`, { refreshToken });
-  // console.log('refresh', response.data);
+  const response = await axios.post(`${API_BASE_URL}/api/auth/refresh-token`, { refreshToken });
   return response.data;
 };
 
@@ -33,12 +32,8 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-  (response) => {
-    // console.log('API response:', response.data); // Log the entire response
-    return response.data; // Return the response data for further processing
-  },
+  (response) => response.data,
   async (error) => {
-
     const originalRequest = error.config;
 
     if (error.response) {
@@ -46,21 +41,23 @@ axiosInstance.interceptors.response.use(
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
 
-        try {
-          const newToken = await refreshToken();
-          localStorage.setItem('authToken', newToken.accessToken);
-          Cookies.set('refreshToken', newToken.refreshToken, { secure: true, httpOnly: true });
+        if (localStorage.getItem('authToken')) {
+          try {
+            const newToken = await refreshToken();
+            localStorage.setItem('authToken', newToken.accessToken);
+            Cookies.set('refreshToken', newToken.refreshToken, { secure: true, httpOnly: true });
 
-          originalRequest.headers['Authorization'] = `Bearer ${newToken.accessToken}`;
-          axiosInstance.defaults.headers['Authorization'] = `Bearer ${newToken.accessToken}`;
+            originalRequest.headers['Authorization'] = `Bearer ${newToken.accessToken}`;
+            axiosInstance.defaults.headers['Authorization'] = `Bearer ${newToken.accessToken}`;
 
-          return axiosInstance(originalRequest);
-        } catch (refreshError) {
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('refreshToken');
-          Cookies.remove('refreshToken');
-          window.location.href = '/auth/login';
-          return Promise.reject(refreshError);
+            return axiosInstance(originalRequest);
+          } catch (refreshError) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('refreshToken');
+            Cookies.remove('refreshToken');
+            window.location.href = '/auth/login';
+            return Promise.reject(refreshError);
+          }
         }
       }
 
@@ -68,6 +65,7 @@ axiosInstance.interceptors.response.use(
       if (error.response.status === 403) {
         localStorage.removeItem('authToken');
         localStorage.removeItem('refreshToken');
+        Cookies.remove('refreshToken');
         window.location.href = '/auth/login';
         return Promise.reject(error);
       }
@@ -76,6 +74,7 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 export default axiosInstance;
 

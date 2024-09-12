@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { saveCourseToWishlist, unsaveCourseFromWishlist } from '../../api/userCourseApi'; 
+import { saveCourseToWishlist, unsaveCourseFromWishlist } from '../../api/userCourseApi';
 
-import {Course} from '../../pages/Users/Bookmarks'
+import { Course } from '../../pages/Users/Bookmarks'
 
 interface CourseCardProps {
   course: Course;
@@ -22,12 +22,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onBookmarkChange }) => 
 
       try {
         if (isBookmarked) { // If it was bookmarked, now unsave
-          const res = await unsaveCourseFromWishlist(course.id);
-          console.log("Unsaved from wishlist:", res);
+          await unsaveCourseFromWishlist(course.id);
           onBookmarkChange && onBookmarkChange(course.id, false); // Notify parent
         } else { // If it wasn't bookmarked, now save
-          const res = await saveCourseToWishlist(course.id);
-          console.log("Saved to wishlist:", res);
+          await saveCourseToWishlist(course.id);
           onBookmarkChange && onBookmarkChange(course.id, true); // Notify parent
         }
       } catch (error) {

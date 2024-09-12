@@ -70,7 +70,8 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ image, onCropComplete, onCa
         setZoom(zoom);
     }, []);
 
-    const onCropCompleteHandler = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+    const onCropCompleteHandler = useCallback(( croppedAreaPixels: Area) => {
+    // const onCropCompleteHandler = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
         setCroppedAreaPixels(croppedAreaPixels);
     }, []);
 
@@ -117,7 +118,8 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ image, onCropComplete, onCa
                 dispatch(setLoading(false));
             }     
         }
-    }, [croppedAreaPixels, getCroppedImage, image, onCropComplete]);
+    }, [croppedAreaPixels, getCroppedImage, image, onCropComplete, dispatch]);
+    // }, [croppedAreaPixels, getCroppedImage, image, onCropComplete]);
 
     return (
         <PopupOverlay>

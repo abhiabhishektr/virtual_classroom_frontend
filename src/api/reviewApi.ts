@@ -8,8 +8,6 @@ export const addCourseReview = async (
     courseId: string, 
     data: { rating: number; comment: string }
 ): Promise<any> => {    
-    console.log("hai this is the");
-    
     const response = await axiosInstance.post(`${PROFILE_ENDPOINT}/${courseId}/reviews`, data);
     return response.data;
 };
@@ -19,7 +17,6 @@ export const editCourseReview = async (
     reviewId: string, 
     data: { rating: number; comment: string }
 ): Promise<any> => {
-    console.log("hai thi editCourseReviews is the");
     const response = await axiosInstance.put(`${PROFILE_ENDPOINT}/courses/${courseId}/reviews/${reviewId}`, data);
     return response.data;
 };

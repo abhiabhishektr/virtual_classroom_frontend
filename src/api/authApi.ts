@@ -19,7 +19,6 @@ interface RegisterUserResponse {
 export async function registerUser({ email, password, name, otp }: RegisterUserInput): Promise<any> {
   try {
     const response = await axiosInstance.post<RegisterUserResponse>(`${AUTH_ENDPOINT}/register`, { email, password, name, otp });
-    console.log('User registration successful:', response);
     return response;
   } catch (error: any) {
 
@@ -60,7 +59,6 @@ export const reSendOTP = async (email: string): Promise<any> => {
 export const Userlogin = async (email: string, password: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(`${AUTH_ENDPOINT}/login`, { email, password });
-    console.log('Login successful:', response);
     return response; // Assuming backend sends back some data on successful login
   } catch (error) {
     console.error('Login failed:', error);
@@ -82,7 +80,6 @@ export const forgotPasswordOTP = async (email: string): Promise<any> => {
 export const forgotPassword = async (email: string, password: string, otp: string): Promise<any> => {
   try {
     const response = await axiosInstance.post(`${AUTH_ENDPOINT}/forgot-password`, { email, password ,otp});
-    console.log('Login successful:', response);
     return response; // Assuming backend sends back some data on successful login
   } catch (error) {
     console.error('Login failed:', error);
@@ -93,7 +90,6 @@ export const forgotPassword = async (email: string, password: string, otp: strin
 export const signOut = async (): Promise<any> => {
   try {
     const response = await axiosInstance.post(`${PROFILE_ENDPOINT}/logout`);
-    console.log('logout successful:', response);
     return response; // Assuming backend sends back some data on successful login
   } catch (error) {
     console.error('logout failed:', error);

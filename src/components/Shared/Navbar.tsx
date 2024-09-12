@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiGrid, FiBook, FiClipboard, FiBell, FiUser, FiLogIn, FiMenu, FiX, FiBookmark } from 'react-icons/fi';
+import { FiGrid, FiBook, FiBell, FiUser, FiLogIn, FiMenu, FiX, FiBookmark } from 'react-icons/fi';
 import { Button } from '../ui/button';
 import { useDispatch } from 'react-redux';
 import { resetAuthState } from '../../redux/slices/authSlice';

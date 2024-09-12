@@ -4,22 +4,24 @@ function useIntersectionObserver(callback: () => void) {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        const observedElement = ref.current;
+
         const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
+            (entries) => {
+                if (entries.length > 0 && entries[0] && entries[0].isIntersecting) {
                     callback();
                 }
             },
             { threshold: 0.1 }
         );
 
-        if (ref.current) {
-            observer.observe(ref.current);
+        if (observedElement) {
+            observer.observe(observedElement);
         }
 
         return () => {
-            if (ref.current) {
-                observer.unobserve(ref.current);
+            if (observedElement) {
+                observer.unobserve(observedElement);
             }
         };
     }, [callback]);

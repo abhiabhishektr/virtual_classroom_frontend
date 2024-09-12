@@ -35,12 +35,13 @@ const PersonalDetails: React.FC = () => {
     if (name === 'phone') setEditedPhone(value);
   };
 
+
+  // personal details .tsx
   const handleSave = async () => {
     dispatch(setLoading(true));
     dispatch(setError(null));
     try {
       const updatedProfile = await updateProfile({ name: editedName, phone: editedPhone });
-      console.log('Profile updated:', updatedProfile);
       
       dispatch(setProfileData(updatedProfile)); 
       setIsEditing(false);
@@ -71,7 +72,6 @@ const PersonalDetails: React.FC = () => {
         },
         withCredentials: true,
       });
-      console.log('Image uploaded:', response.data);
       dispatch(setProfileData({ ...response.data, profilePicture: selectedImage }));
       showToast('Image uploaded successfully!', 'success');
 
@@ -101,7 +101,6 @@ const PersonalDetails: React.FC = () => {
       const file = new File([croppedBlob], "cropped_image.jpg", { type: 'image/jpeg' });
       const imageUrl = await uploadImage(file);
       await updateProfile({ profilePicture: imageUrl });
-      console.log('Image uploaded:', imageUrl);
       dispatch(setProfileData({ profilePicture: imageUrl }));
 
       setSelectedImage(imageUrl);
@@ -216,7 +215,7 @@ const PersonalDetails: React.FC = () => {
             name="name"
             value={editedName}
             onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 block w-full rounded-md border-gray-300 focus:border-indigo-500 shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           />
         ) : (
           <p className="mt-1">{name}</p>
@@ -244,7 +243,7 @@ const PersonalDetails: React.FC = () => {
             name="phone"
             value={editedPhone}
             onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            className="mt-1 block w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm focus:ring focus:ring-opacity-50"
           />
         ) : (
           <p className="mt-1">{phone}</p>

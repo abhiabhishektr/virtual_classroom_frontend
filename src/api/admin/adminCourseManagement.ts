@@ -16,7 +16,6 @@ export const getCourses = async (): Promise<any> => {
 
 // Function to block a course
 export const blockCourse = async (courseId: string): Promise<void> => {
-    console.log("courseId: ", courseId);
     try {
         await adminAxiosInstance.patch(`${ADMIN_ENDPOINT}/courses/${courseId}/block`);
     } catch (error) {

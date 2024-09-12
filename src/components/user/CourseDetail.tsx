@@ -15,6 +15,7 @@ import RatingAndReview from './RatingAndReview';
 import { markContentCompleted, markContentImportant, unmarkContentCompleted, unmarkContentImportant } from '../../api/user/userProgressApi';
 import { showToast } from '../../utils/toast';
 import SaveButton from './SaveButton';
+import ReportIssueButton from './ReportIssueButton.tsx';
 
 
 const CourseDetail: React.FC = () => {
@@ -60,7 +61,8 @@ const CourseDetail: React.FC = () => {
     const handleStarToggle = async (moduleIndex: number, contentIndex: number) => {
         if (!course || !course.modules || !courseId) return;
 
-        const content = course.modules[moduleIndex].contents[contentIndex];
+        const content = course?.modules?.[moduleIndex]?.contents[contentIndex];
+        if (!content) return;
         const isImportant = content.isImportant;
 
 
@@ -77,7 +79,7 @@ const CourseDetail: React.FC = () => {
             const updatedCourse = { ...course };
             if (updatedCourse.modules) {
                 // Ensure modules and contents are defined
-                if (updatedCourse.modules[moduleIndex]?.contents) {
+                if (updatedCourse.modules[moduleIndex]?.contents?.[contentIndex]) {
                     updatedCourse.modules[moduleIndex].contents[contentIndex].isImportant = !isImportant;
                 }
             }
@@ -94,7 +96,8 @@ const CourseDetail: React.FC = () => {
 
         if (!course || !course.modules || !courseId) return;
 
-        const content = course.modules[moduleIndex].contents[contentIndex];
+        const content = course.modules?.[moduleIndex]?.contents?.[contentIndex];
+        if (!content) return;
         const isCompleted = content.isCompleted;
 
 
@@ -111,7 +114,7 @@ const CourseDetail: React.FC = () => {
             const updatedCourse = { ...course };
             if (updatedCourse.modules) {
                 // Ensure modules and contents are defined
-                if (updatedCourse.modules[moduleIndex]?.contents) {
+                if (updatedCourse.modules?.[moduleIndex]?.contents?.[contentIndex]) {
                     updatedCourse.modules[moduleIndex].contents[contentIndex].isCompleted = !isCompleted;
                 }
             }
@@ -143,7 +146,7 @@ const CourseDetail: React.FC = () => {
 
     return (
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-           
+
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 {/* Course Title and Basic Info */}
                 <motion.div
@@ -194,11 +197,11 @@ const CourseDetail: React.FC = () => {
                         {/* Course Details */}
                         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
                             <div className='flex justify-between items-center mb-2'>
-                            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Course Details</h2>
-                            {!course.isPurchased && (
-                                <SaveButton courseId={course._id} />
-                            )}
-                            
+                                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Course Details</h2>
+                                {!course.isPurchased && (
+                                    <SaveButton courseId={course._id} />
+                                )}
+
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {[
@@ -373,6 +376,9 @@ const CourseDetail: React.FC = () => {
                         </div>
                     </motion.div>
                 </div>
+            </div>
+            <div className="flex items-center justify-center py-3">
+                <ReportIssueButton courseId={course._id}  tittle={course.title}/> {/* Use the new component */}
             </div>
         </div>
     );
