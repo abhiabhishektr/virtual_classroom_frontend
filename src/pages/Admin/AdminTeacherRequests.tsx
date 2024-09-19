@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getAllTeacherRequests, updateTeacherRequestStatus, deleteTeacherRequest } from '../../api/admin/userRequestApi';
+import { getAllTeacherRequests, updateTeacherRequestStatus, deleteTeacherRequest } from '../../api/admin/adminTeacherRequestApi';
 import { showToast } from '../../utils/toast';
 import { AxiosError } from 'axios';
 

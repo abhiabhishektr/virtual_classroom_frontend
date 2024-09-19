@@ -45,7 +45,7 @@ export const useAuth = () => {
     localStorage.removeItem('refreshToken');
     Cookies.remove('refreshToken');
     dispatch(setAuthToken(null));  // Update Redux store
-    dispatch(resetAuthState());   // Clear auth state
+    dispatch(resetAuthState());    // Clear auth state
     dispatch(resetProfileState()); // Clear profile state
     checkAuthTokens();
   };

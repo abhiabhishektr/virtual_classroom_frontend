@@ -6,6 +6,7 @@ import { CourseData, CourseSubmissionData } from '../../types/CourseTypes';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import imageCompression from 'browser-image-compression';
+import { useNavigate } from 'react-router-dom';
 
 interface CourseRegistrationFormProps {
   mode: 'create' | 'edit';
@@ -32,6 +33,7 @@ const CourseRegistrationForm: React.FC<CourseRegistrationFormProps> = ({
   nonEditableFields = []
 }) => {
   const { name, email } = useSelector((state: RootState) => state.profile);
+  const navigate = useNavigate();
 
   const [image, setImage] = useState<string>(
     course?.imageUrl || 'https://images.unsplash.com/photo-1549880338-65ddcdfd017b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ'
@@ -52,31 +54,50 @@ const CourseRegistrationForm: React.FC<CourseRegistrationFormProps> = ({
   const handleChangeImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-        try {
-            const options = {
-                maxSizeMB: 10, // Maximum file size in MB
-                maxWidthOrHeight: 1024, // Max width or height to maintain aspect ratio
-                useWebWorker: true // web content to run scripts in background threads
-            };
-            const compressedFile = await imageCompression(file, options);
+      try {
+        const options = {
+          maxSizeMB: 10, // Maximum file size in MB
+          maxWidthOrHeight: 1024, // Max width or height to maintain aspect ratio
+          useWebWorker: true // web content to run scripts in background threads
+        };
+        const compressedFile = await imageCompression(file, options);
 
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImage(reader.result as string);
-                setImageFile(compressedFile);
-            };
-            reader.readAsDataURL(compressedFile);
-        } catch (error) {
-            console.error('Error compressing image:', error);
-        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImage(reader.result as string);
+          setImageFile(compressedFile);
+        };
+        reader.readAsDataURL(compressedFile);
+      } catch (error) {
+        console.error('Error compressing image:', error);
+      }
     }
-};
+  };
 
   return (
     <div className="max-w-6xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">
-        {mode === 'edit' ? 'Edit Course' : 'Register a New Course'}
-      </h2>
+      
+      <div className="flex items-center justify-between mb-6">
+        <button
+          onClick={() => navigate('/profile/course-list')}
+          className="mr-4 text-gray-600 hover:text-gray-800 hover:bg-black hover:bg-opacity-20  rounded-full"  
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          > 
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h2 className="text-2xl font-bold">
+          {mode === 'edit' ? 'Edit Course' : 'Register a New Course'}
+        </h2>
+        <div></div>
+      </div>
+
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -148,7 +169,7 @@ const CourseRegistrationForm: React.FC<CourseRegistrationFormProps> = ({
                   </div>
                   <div className='items-center '>
                     <div>
-                   <p className="block mb-2 text-sm font-medium text-gray-900">Contact Email : {email} </p>   
+                      <p className="block mb-2 text-sm font-medium text-gray-900">Contact Email : {email} </p>
                     </div>
                     <div>
                       <p className="block mb-2 text-sm font-medium text-gray-900">Instructor Name : {name}</p>

@@ -6,7 +6,7 @@ import SortBy from '../../components/Shared/SortBy';
 import SearchBar from '../../components/Shared/SearchBar';
 import Pagination from '../../components/Shared/Pagination';
 import { getUserCourses } from '../../api/userCourseApi';
-import { motion ,AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { courseListingDTO as Course } from '../../types/courseListingDTO';
 import { useDispatch } from 'react-redux';
@@ -27,6 +27,7 @@ const CourseListing: React.FC = () => {
   const [sortOption, setSortOption] = useState<string>('');
   const [showMyLearnings, setShowMyLearnings] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(1);
+  console.log("totalPages: ", totalPages);
   const [loadingSkeleton, setLoadingSkeleton] = useState<boolean>(true);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -90,24 +91,24 @@ const CourseListing: React.FC = () => {
 
   return (
     <div className="p-6 grid lg:grid-cols-6 gap-4">
-  
+
       {/* <FeaturedCoursesBanner/> */}
-  
-      <motion.div 
+
+      <motion.div
         className="lg:col-span-1"
-        initial={{ x: -50, opacity: 0 }} 
-        animate={{ x: 0, opacity: 1 }} 
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         <Filter onFilterChange={handleFilterChange} />
       </motion.div>
-  
-      <motion.div 
+
+      <motion.div
         className="lg:col-span-5"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }} 
-      > 
+        transition={{ duration: 0.8 }}
+      >
         <div className="flex justify-between items-center mb-6">
           <div className="w-64">
             <SearchBar onSearch={handleSearch} />
@@ -136,9 +137,9 @@ const CourseListing: React.FC = () => {
             </div>
           </div>
         </div>
-  
+
         <AnimatePresence>
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -151,7 +152,7 @@ const CourseListing: React.FC = () => {
               ))
             ) : (
               currentCourses.map(course => (
-                <motion.div key={course.id}> 
+                <motion.div key={course.id}>
                   <CourseCard
                     course={course}
                     onBookmarkChange={handleBookmarkChange}
@@ -161,20 +162,25 @@ const CourseListing: React.FC = () => {
             )}
           </motion.div>
         </AnimatePresence>
-  
-        <motion.div 
+
+        <motion.div
           className="mt-8"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.2 }}
         >
-          <Pagination 
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={page => setCurrentPage(page)}
-          />
+          {
+            totalPages &&
+            (<div className='flex items-center justify-center'>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={page => setCurrentPage(page)}
+              />
+            </div>)
+          }
         </motion.div>
-      </motion.div> 
+      </motion.div>
     </div>
   );
 };

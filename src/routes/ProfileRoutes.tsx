@@ -18,7 +18,7 @@ import TeacherProtectedRoute from './ProtectedRoute/TeacherProtectedRoute';
 import CoursePurchaseHistory from '../pages/Users/CoursePurchaseHistory';
 import CourseContents from '../pages/Teacher/CourseContentView';
 import Notifications from '../pages/Users/Notifications';
-import { FiMenu } from 'react-icons/fi';
+// import { FiMenu } from 'react-icons/fi';
 
 
 const ProfilePage: React.FC = () => {
@@ -54,13 +54,10 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="flex min-h-full ">
-      <div className='block md:hidden fixed '>
-      <FiMenu/>
-      </div>
-      <div className='w-72 hidden md:block '>
+      {/* <div className='w-72 hidden md:block '> */}
       <Sidebar />
-      </div>
-      <main className="flex-1">
+      {/* </div> */}
+      <main className="flex-1  ml-0 md:ml-72">
         <Routes>
           <Route path="/" element={<ProfileOverview />} />
           <Route path="/edit-profile" element={<PersonalDetails />} />

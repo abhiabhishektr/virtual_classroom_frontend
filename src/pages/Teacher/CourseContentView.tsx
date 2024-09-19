@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import CourseContentManagement from '../../components/Profile/CourseContentManagement';
 import { getModulesByCourseId } from '../../api/teacher/courseContentApi';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { IChapter, courseContentDetails } from '../../types/contentTypes';
 
@@ -10,6 +10,7 @@ import { IChapter, courseContentDetails } from '../../types/contentTypes';
 
 const CourseContent: React.FC = () => {
   const [chapters, setChapters] = useState<IChapter[]>([]);
+  const navigate =useNavigate();
   // In CourseContentView.tsx
   const [courseDetails, setCourseDetails] = useState<courseContentDetails>({
     courseId: '',
@@ -40,11 +41,28 @@ const CourseContent: React.FC = () => {
   }, [courseId]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">{courseDetails.title}</h1>
+    <div className="container mx-auto px-4 py-3">
+      <div className='flex items-center justify-between w-full mb-3'>
+      <button
+          onClick={() => navigate('/profile/course-list')}
+          className="mr-4 text-gray-600 hover:text-gray-800 hover:bg-black hover:bg-opacity-20  rounded-full"  
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          > 
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+      <h2 className="text-2xl font-bold">{courseDetails.title}</h2>
+      <div></div>
+      </div>
       <CourseContentManagement chapters={chapters} courseDetails={(courseDetails ?? {})} />
     </div>
-  );
+  ); 
 };
 
 export default CourseContent;

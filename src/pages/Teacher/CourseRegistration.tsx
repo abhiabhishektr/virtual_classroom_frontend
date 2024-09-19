@@ -33,7 +33,6 @@ const CourseRegistration: React.FC = () => {
 
   return (
     <div>
-      <h1 className="text-3xl">Course Registration</h1>
       <CourseRegistrationForm mode="create" onSubmit={handleSubmit} />
     </div>
   );

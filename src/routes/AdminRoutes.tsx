@@ -16,9 +16,9 @@ const AdminRoutes: React.FC = () => {
     const isAdminRoute = location.pathname === '/admin/adminlogin';
 
     return (
-        <div className="flex"> {/* Make the main container a flexbox */}
-            {!isAdminRoute && <AdminSidebar />} {/* Render sidebar conditionally */}
-            <div className="flex-1 ml-64 p-4">{/* Add margin to main content */}
+        <div className="flex"> 
+            {!isAdminRoute && <AdminSidebar />} 
+            <div className={`flex-1  ${!isAdminRoute ? 'ml-64' : ''}`}>
                 <Routes>
                     <Route path="/adminlogin" element={<AdminLogin />} />
 

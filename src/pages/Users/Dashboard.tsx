@@ -5,7 +5,8 @@ import Lottie from 'lottie-react';
 import animationData from '../../assets/Json/hero.json'; // Adjust the path to your animation JSON file
 import hero from '../../assets/images/hero.jpg';
 import FeatureCard from "../../components/LandingPage/FeatureCard"; // Assuming you have a FeatureCard component
-import Testimonial from "../../components/LandingPage/Testimonial"; // Assuming you have a Testimonial component
+import Testimonial from "../../components/LandingPage/Testimonial" ; // Assuming you have a Testimonial component
+// import LandingCarousel from "../../components/LandingPage/LandingCarousel.ts" ; // Assuming you have a Testimonial component
 
 
 

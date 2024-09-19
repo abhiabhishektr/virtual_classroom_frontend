@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { adminLogin } from '../../api/admin/adminAuthApi';
 import { useAuth } from '../../hooks/useAuth';
-import img from "../../assets/images/img"; 
+import img from "../../assets/images/img";
 
 const AdminLogin: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -12,7 +12,7 @@ const AdminLogin: React.FC = () => {
   const [commonerror, setCommonError] = useState<string | null>(null);
 
   const navigate = useNavigate();
-  const { setAdminLogin } = useAuth(); 
+  const { setAdminLogin } = useAuth();
 
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);

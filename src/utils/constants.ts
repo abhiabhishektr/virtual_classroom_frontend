@@ -2,7 +2,9 @@
 
 // API Endpoints
 export const API_BASE_URL = "http://localhost:5000";
-// export const API_BASE_URL = "https://g37bwctb-5000.inc1.devtunnels.ms/";
+//production 
+// export const API_BASE_URL = "https://zoschool.zotocode.com";
+
 export const AUTH_ENDPOINT = "/api/auth";
 export const TEACHER_ENDPOINT = "/api/teacher";
 export const CHAT_ENDPOINT = "/api/chat";

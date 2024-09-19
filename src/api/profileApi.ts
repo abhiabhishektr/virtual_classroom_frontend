@@ -60,3 +60,16 @@ export const updatePassword = async (curr: string, newPass: string): Promise<Cha
   });
   return response.data;
 };
+
+// api calling 
+export interface INotification { 
+  id: number;
+  title: string;
+  message: string;
+  createdAt: string;
+}
+
+export const notifications = async (): Promise<INotification[]> => {
+  const response = await axiosInstance.get<INotification[]>(`${PROFILE_ENDPOINT}/notifications`);
+  return response.data;
+};

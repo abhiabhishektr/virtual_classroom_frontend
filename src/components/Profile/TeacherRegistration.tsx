@@ -67,75 +67,55 @@ const RequestTeacherStatus: React.FC = () => {
   });
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">
-        {requestData ? 'Teacher Request Status' : 'Request Teacher Status'}
-      </h2>
+<div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+  <h2 className="text-2xl font-bold mb-6 text-center">
+    {requestData ? 'Teacher Request Status' : 'Request Teacher Status'}
+  </h2>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : requestData ? (
-        <div className="space-y-6">
+  {loading ? (
+    <p>Loading...</p>
+  ) : requestData ? (
+    <div className="space-y-6">
+      <div className="bg-gray-50 p-4 rounded-md shadow-sm">
+        <h3 className="text-lg font-medium text-gray-900">Request Details</h3>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="qualification" className="block text-sm font-medium text-gray-700">
               Highest Qualification
             </label>
-            <Input
-              id="qualification"
-              type="text"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
-              value={requestData.highestQualification}
-              readOnly
-            />
+            <p className="mt-2 text-gray-900">{requestData.highestQualification}</p>
           </div>
 
           <div>
             <label htmlFor="experience" className="block text-sm font-medium text-gray-700">
               Years of Teaching Experience
             </label>
-            <Input
-              id="experience"
-              type="number"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
-              value={requestData.yearsOfTeachingExperience}
-              readOnly
-            />
+            <p className="mt-2 text-gray-900">{requestData.yearsOfTeachingExperience}</p>
           </div>
 
           <div>
             <label htmlFor="subjectsToTeach" className="block text-sm font-medium text-gray-700">
-              Subjects You Want to Teach (comma-separated)
+              Subjects You Want to Teach
             </label>
-            <Input
-              id="subjectsToTeach"
-              type="text"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
-              value={requestData.subjects}
-              readOnly
-            />
+            <p className="mt-2 text-gray-900">{requestData.subjects}</p>
           </div>
 
           <div>
             <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
               Brief Bio or Teaching Philosophy
             </label>
-            <textarea
-              id="bio"
-              rows={4}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
-              value={requestData.bio}
-              readOnly
-            ></textarea>
+            <p className="mt-2 text-gray-900">{requestData.bio}</p>
           </div>
-
-          <div className="flex items-center justify-between">
-            <p className={`text-lg font-medium ${status === 'pending' ? 'text-yellow-500' : status === 'approved' ? 'text-green-500' : status === 'rejected' ? 'text-red-500' : ''}`}>
-              Status: {status}
-            </p>
-          </div>
-
         </div>
-      ) : (
+      </div>
+
+      <div className="mt-6">
+        <p className={`text-lg font-medium ${status === 'pending' ? 'text-yellow-500' : status === 'approved' ? 'text-green-500' : status === 'rejected' ? 'text-red-500' : ''}`}>
+          Status: {status}
+        </p>
+      </div>
+    </div>
+  ) : (
         <form onSubmit={formik.handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="qualification" className="block text-sm font-medium text-gray-700">
