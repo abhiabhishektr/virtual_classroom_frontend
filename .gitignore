@@ -27,4 +27,12 @@ src/Testing
 color.png
 file2.md
 
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+et --hard*
+
 # rm -f .git/index.lock
