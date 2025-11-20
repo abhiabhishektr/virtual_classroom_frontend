@@ -28,7 +28,7 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 axiosInstance.interceptors.response.use(
@@ -45,7 +45,11 @@ axiosInstance.interceptors.response.use(
           try {
             const newToken = await refreshToken();
             localStorage.setItem('authToken', newToken.accessToken);
-            Cookies.set('refreshToken', newToken.refreshToken, { secure: true, httpOnly: true });
+            // Note: Refresh token cookie should be set by backend
+            Cookies.set('refreshToken', newToken.refreshToken, {
+              secure: true,
+              sameSite: 'strict',
+            });
 
             originalRequest.headers['Authorization'] = `Bearer ${newToken.accessToken}`;
             axiosInstance.defaults.headers['Authorization'] = `Bearer ${newToken.accessToken}`;
@@ -72,12 +76,10 @@ axiosInstance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
-
 export default axiosInstance;
-
 
 // // src/api/axiosInstance.ts
 // import Cookies from 'js-cookie';
@@ -100,7 +102,7 @@ export default axiosInstance;
 //   const refreshToken = localStorage.getItem('refreshToken');
 //   const response = await axios.post(`${API_BASE_URL}api/auth/refresh-token`, { refreshToken });
 //   console.log('refresh',response.data);
-  
+
 //   return response.data;
 // };
 
@@ -120,7 +122,7 @@ export default axiosInstance;
 //     console.log( 'API response:',response); // Log the entire response
 //     return response.data; // Return the response data for further processing
 //   },
-  
+
 //   async (error) => {
 //     const originalRequest = error.config;
 
@@ -152,19 +154,3 @@ export default axiosInstance;
 // );
 
 // export default axiosInstance;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

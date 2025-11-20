@@ -14,9 +14,9 @@ export const useAuth = () => {
     const token = localStorage.getItem('authToken');
     const adminToken = localStorage.getItem('adminToken');
     if (token) {
-      dispatch(setAuthToken(token));  // Update Redux store
+      dispatch(setAuthToken(token)); // Update Redux store
     } else if (adminToken) {
-      dispatch(setAuthToken(adminToken));  // Update Redux store
+      dispatch(setAuthToken(adminToken)); // Update Redux store
     }
   }, [dispatch]);
 
@@ -27,25 +27,27 @@ export const useAuth = () => {
   const login = (accessToken: string, refreshToken: string) => {
     localStorage.setItem('authToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
-    Cookies.set('refreshToken', refreshToken, { secure: true, httpOnly: true });
-    dispatch(setAuthToken(accessToken));  // Update Redux store
+    // Note: httpOnly cookies must be set by the backend server
+    // Client-side httpOnly flag is ignored by browsers
+    Cookies.set('refreshToken', refreshToken, { secure: true, sameSite: 'strict' });
+    dispatch(setAuthToken(accessToken)); // Update Redux store
     checkAuthTokens();
   };
 
   const setAdminLogin = (accessToken: string, refreshToken: string) => {
     localStorage.setItem('adminToken', accessToken);
-    Cookies.set('refreshToken', refreshToken, { secure: true, httpOnly: true });
-    dispatch(setAuthToken(accessToken));  // Update Redux store
+    // Note: httpOnly cookies must be set by the backend server
+    Cookies.set('refreshToken', refreshToken, { secure: true, sameSite: 'strict' });
+    dispatch(setAuthToken(accessToken)); // Update Redux store
     checkAuthTokens();
-    console.log('Admin login set, state updated.');
   };
 
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('refreshToken');
     Cookies.remove('refreshToken');
-    dispatch(setAuthToken(null));  // Update Redux store
-    dispatch(resetAuthState());    // Clear auth state
+    dispatch(setAuthToken(null)); // Update Redux store
+    dispatch(resetAuthState()); // Clear auth state
     dispatch(resetProfileState()); // Clear profile state
     checkAuthTokens();
   };
@@ -53,7 +55,7 @@ export const useAuth = () => {
   const adminLogout = () => {
     localStorage.removeItem('adminToken');
     Cookies.remove('refreshToken');
-    dispatch(setAuthToken(null));  // Update Redux store
+    dispatch(setAuthToken(null)); // Update Redux store
     checkAuthTokens();
   };
 
@@ -64,6 +66,6 @@ export const useAuth = () => {
     logout,
     setAdminLogin,
     adminLogout,
-    checkAuthTokens
+    checkAuthTokens,
   };
 };

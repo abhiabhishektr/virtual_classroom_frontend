@@ -1,17 +1,13 @@
-// src/routes/AuthRoutes.tsx
+// src/routes/TestRoutes.tsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import BookmarkPage from '../Testing/t2';
 
-
-
-const AuthRoutes: React.FC = () => {
+const TestRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path="/2" element={<BookmarkPage />} />
+      <Route path="/test" element={<div>Test Page</div>} />
     </Routes>
   );
 };
 
-export default AuthRoutes;
-
+export default TestRoutes;

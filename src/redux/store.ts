@@ -29,6 +29,14 @@ export const store = configureStore({
     auth: authReducer, // Add auth reducer
   },
   preloadedState: loadInitialState(),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these paths in the state for serialization checks
+        ignoredActions: ['socket/setSocket'],
+        ignoredPaths: ['socket.socket'],
+      },
+    }),
 });
 
 // Save Redux state to localStorage on each state change

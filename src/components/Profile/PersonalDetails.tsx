@@ -4,12 +4,13 @@ import { RootState } from '../../redux/store';
 import { updateProfile } from '../../api/profileApi';
 import { setProfileData, setLoading, setError } from '../../redux/slices/profileSlice';
 import { showToast } from '../../utils/toast';
-import ImageCropper from "../../libraries/ImageCropper";
-import uploadImage from "../../libraries/uploadImage";
+import ImageCropper from '../../libraries/ImageCropper';
+import uploadImage from '../../libraries/uploadImage';
 import axios from 'axios';
 import ChangePasswordPopup from './ChangePasswordPopup';
 import { Input } from '../ui/input';
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from '../../utils/constants';
 
 const PersonalDetails: React.FC = () => {
   const dispatch = useDispatch();
@@ -35,19 +36,18 @@ const PersonalDetails: React.FC = () => {
     if (name === 'phone') setEditedPhone(value);
   };
 
-
   // personal details .tsx
   const handleSave = async () => {
     dispatch(setLoading(true));
     dispatch(setError(null));
     try {
       const updatedProfile = await updateProfile({ name: editedName, phone: editedPhone });
-      
-      dispatch(setProfileData(updatedProfile)); 
+
+      dispatch(setProfileData(updatedProfile));
       setIsEditing(false);
       showToast('Profile updated successfully', 'success');
     } catch (error) {
-      dispatch(setError("Failed to update profile"));
+      dispatch(setError('Failed to update profile'));
       showToast('Failed to update profile', 'error');
     } finally {
       dispatch(setLoading(false));
@@ -60,13 +60,13 @@ const PersonalDetails: React.FC = () => {
       return;
     }
     try {
-      const userId = "6655b84dcd18c2d98ae176aa"; // You might want to get this from your Redux state
+      const userId = '6655b84dcd18c2d98ae176aa'; // You might want to get this from your Redux state
       const data = {
         userId: userId,
         image: selectedImage,
       };
 
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/user/uploadImage`, data, {
+      const response = await axios.post(`${API_BASE_URL}/api/user/uploadImage`, data, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -98,7 +98,7 @@ const PersonalDetails: React.FC = () => {
     try {
       dispatch(setLoading(true));
 
-      const file = new File([croppedBlob], "cropped_image.jpg", { type: 'image/jpeg' });
+      const file = new File([croppedBlob], 'cropped_image.jpg', { type: 'image/jpeg' });
       const imageUrl = await uploadImage(file);
       await updateProfile({ profilePicture: imageUrl });
       dispatch(setProfileData({ profilePicture: imageUrl }));
@@ -127,7 +127,7 @@ const PersonalDetails: React.FC = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={{ duration: 0.8, ease: 'easeOut' }}
       className="w-full max-w-md mx-auto rounded-xl bg-gradient-to-r from-blue-100 to-purple-100 shadow-lg p-8"
     >
       <motion.h2
@@ -138,7 +138,7 @@ const PersonalDetails: React.FC = () => {
       >
         Personal Details
       </motion.h2>
-  
+
       {croppingImage ? (
         <ImageCropper
           image={croppingImage}
@@ -156,7 +156,7 @@ const PersonalDetails: React.FC = () => {
               <img
                 className="object-cover object-center h-32 w-32"
                 src={selectedImage}
-                alt='User Profile'
+                alt="User Profile"
               />
               {hovered && (
                 <label className="absolute top-0 left-0 w-full h-full flex items-center justify-center cursor-pointer bg-black bg-opacity-50">
@@ -193,15 +193,18 @@ const PersonalDetails: React.FC = () => {
           )}
         </div>
       )}
-  
+
       {imageChanged && (
         <div className="mt-2 text-center">
-          <button onClick={handleChangeImage} className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md">
+          <button
+            onClick={handleChangeImage}
+            className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md"
+          >
             Save Image
           </button>
         </div>
       )}
-  
+
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -256,9 +259,19 @@ const PersonalDetails: React.FC = () => {
         className="mt-6 flex justify-between"
       >
         {isEditing ? (
-          <button onClick={handleSave} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">Save</button>
+          <button
+            onClick={handleSave}
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+          >
+            Save
+          </button>
         ) : (
-          <button onClick={() => setIsEditing(true)} className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md">Edit</button>
+          <button
+            onClick={() => setIsEditing(true)}
+            className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md"
+          >
+            Edit
+          </button>
         )}
         <button
           onClick={handleChangePassword}
@@ -267,12 +280,9 @@ const PersonalDetails: React.FC = () => {
           Change Password
         </button>
       </motion.div>
-  
+
       {isChangePasswordOpen && (
-        <ChangePasswordPopup
-          visible={isChangePasswordOpen}
-          setVisible={setIsChangePasswordOpen}
-        />
+        <ChangePasswordPopup visible={isChangePasswordOpen} setVisible={setIsChangePasswordOpen} />
       )}
     </motion.div>
   );
